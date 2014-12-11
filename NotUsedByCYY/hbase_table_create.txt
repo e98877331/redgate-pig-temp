@@ -1,0 +1,8 @@
+create 'RequestTagUser', 'summary'
+create 'RequestUserTag', 'summary'
+create 'RequestComparison', 'summary'
+create 'RequestReputation', 'summary'
+create 'RequestCosmetics', 'summary'
+create 'RequestBC', 'summary'
+create 'UserProfile_95', 'intent'
+quit

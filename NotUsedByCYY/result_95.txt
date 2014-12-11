@@ -1,0 +1,34 @@
+HadoopVersion   PigVersion      UserId  StartedAt       FinishedAt      Features
+2.4.0.2.1.5.0-695       0.12.1.2.1.5.0-695      hdfs    2014-11-13 16:01:46     2014-11-13 16:05:51     HASH_JOIN,GROUP_BY,FILTER
+
+Success!
+
+Job Stats (time in seconds):
+JobId   Maps    Reduces MaxMapTime      MinMapTIme      AvgMapTime      MedianMapTime   MaxReduceTime   MinReduceTime   AvgReduceTime   MedianReducetime     Alias    Feature Outputs
+job_1414639564554_0349  5       1       121     84      100     102     39      39      39      39      group_user_compare,group_user_cosmetics,group_user_reputation,gt10,gt1_compare,gt1_cosmetics,gt1_reputation,gt20,myLogs,user_who_visit_pingle_ezprice_findprice,user_who_visit_pixnet,user_who_visit_urcosme_fashsionguid,visit_domains_count_compare,visit_domains_count_cosmetics,visit_domains_count_reputation  MULTI_QUERY,COMBINER    hbase://RequestComparison_95,hbase://RequestReputation_95,hbase://RequestCosmetics_95,
+job_1414639564554_0350  2       1       8       7       8       8       5       5       5       5       profile_bc,profile_join2        HASH_JOIN
+job_1414639564554_0351  2       1       9       5       7       7       7       7       7       7       BC,Y    HASH_JOIN       hbase://RequestBC_95,
+job_1414639564554_0352  2       1       8       7       8       8       6       6       6       6       gt20_cosmetics,profile_bcd,profile_join3        HASH_JOIN     hbase://UserProfile_95,
+
+Input(s):
+Successfully read 11706326 records (2166 bytes) from: "hbase://RequestDomains"
+
+Output(s):
+Successfully stored 25013 records in: "hbase://RequestComparison_95"
+Successfully stored 39895 records in: "hbase://RequestReputation_95"
+Successfully stored 6168 records in: "hbase://RequestCosmetics_95"
+Successfully stored 17261 records in: "hbase://UserProfile_95"
+Successfully stored 2635 records in: "hbase://RequestBC_95"
+
+Counters:
+Total records written : 90972
+Total bytes written : 0
+Spillable Memory Manager spill count : 0
+Total bags proactively spilled: 0
+Total records proactively spilled: 0
+
+Job DAG:
+job_1414639564554_0349  ->      job_1414639564554_0350,job_1414639564554_0351,
+job_1414639564554_0350  ->      job_1414639564554_0352,
+job_1414639564554_0352
+job_1414639564554_0351
