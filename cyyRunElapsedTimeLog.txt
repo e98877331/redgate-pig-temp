@@ -1,0 +1,12 @@
+Truncate_ElapsedTime: %02d:%02d:%02d:%02d
+ 0 0 0 2
+Product_daily_ElapsedTime: %02d:%02d:%02d:%02d
+ 0 0 0 27
+Domains_daily_ElapsedTime: %02d:%02d:%02d:%02d
+ 0 0 0 39
+A1_ElapsedTime: %02d:%02d:%02d:%02d
+ 0 0 11 22
+BCD_ElapsedTime: %02d:%02d:%02d:%02d
+ 0 0 0 1
+E_ElapsedTime: %02d:%02d:%02d:%02d
+ 0 0 2 57
