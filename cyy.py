@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-from __future__ import with_statement
+#from __future__ import with_statement
 from org.apache.pig.scripting import Pig
-#import json
+import json
 from pprint import pprint
 
 
@@ -49,11 +49,11 @@ DResult = ORDER DResult By ReqSum;
     }
 
 
-#with open('params.json') as data_file:
-#  params = json.load(data_file)
+with open('params.json') as data_file:
+  params = json.load(data_file)
 
 #pprint(params)
-params=[["A1",5],["B",5],["C",5]]
+#params=[["A1",5],["B",5],["C",5]]
 
 pigString = "REGISTER /usr/lib/hbase/lib/*.jar;"
 
