@@ -50,30 +50,20 @@ DResult = ORDER DResult By ReqSum;
 
 
 with open('params.json') as data_file:
-  params = json.load(data_file)
+  jsonArr = json.load(data_file)
 
 #pprint(params)
 #params=[["A1",5],["B",5],["C",5]]
 
 pigString = "REGISTER /usr/lib/hbase/lib/*.jar;"
 
-for i in params:
-  pigString += codegenTable[i[0]]
+for i in jsonArr:
+  pigString += codegenTable[i['action']]
 
 pigString += """
 A1BResult = JOIN BResult BY UserId, CResult By UserId;
 DUMP A1BResult;
 """
-  #  if i[0] == "A1":
-#    pigString +="""
-#    this is a book,
-#    a very good book
-#    why don't you buy on1\
-#    hahahah
-#    """
-#  if i[0] == "B":
-#    pigString += """
-#    """
 
 print(pigString)
 
@@ -83,9 +73,12 @@ print(pigString)
 P = Pig.compile(pigString)
 #P = Pig.compileFromFile('pig_bcd_bc.pig')
 
-result = P.bind().runSingle()
+#run the pig script
 
-if result.isSuccessful():
-  print 'run success'
-else:
-  raise 'run failed'
+if False:
+  result = P.bind().runSingle()
+
+  if result.isSuccessful():
+    print 'run success'
+  else:
+    raise 'run failed'
