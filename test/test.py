@@ -1,8 +1,5 @@
-from pprint import pprint
-import json
+s =""
+for i in range(0,50):
+  s += str(i);
 
-with open('data2.json') as data_file:
-  data1 = json.load(data_file)
-
-pprint(data1)
-
+print s
