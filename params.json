@@ -1,4 +1,6 @@
 [
 {"action":"A1","params":{"startRow":"48_1025339","endRow":"48_1025340"}},
-{"action":"B","params":{"minReqSum":"15"}}
+{"action":"B","params":{"minReqSum":"15"}},
+{"action":"C","params":{"minReqSum":"15"}},
+{"action":"D","params":{"minReqSum":"15"}}
 ]

@@ -1,38 +1,15 @@
 #!/usr/bin/python
 
+USE_PIG = True
+#USE_PIG = False
 #from __future__ import with_statement
-from org.apache.pig.scripting import Pig
+if USE_PIG:
+  from org.apache.pig.scripting import Pig
+
 import json
 from pprint import pprint
 
-#class Binder:
-#  @staticmethod
-#  def bindParams(script,params)
-#  """
-#  script : pig code string
-#  params : params dictionary
-#  """
-#    for key,value in params.iteritems:
-#        script.replace('$'+key,value)
-#    return script
-
-def bindParams(script,paramsDic):
-  for key,value in paramsDic.iteritems():
-      script = script.replace('$'+key,value)
-       
-  return script
-
-
-if __name__ == "__main__":
-
-
-
-  print "======================start==================="
-  print "======================start==================="
-  print "======================start==================="
-  print "======================start==================="
-  
-  codegenTable ={
+codegenTable ={
       'A1':
       """
   A1Result = LOAD 'hbase://RequestTagUser' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage ('summary:ECId summary:ProductCategory summary:ProductId summary:ProductName summary:Score summary:UserId', '-gte=$startRow -lte=$endRow') AS (ECId:chararray, ProductCategory:chararray, ProductId:chararray, ProductName:chararray, score:int, UserId:chararray);
@@ -68,7 +45,70 @@ if __name__ == "__main__":
   DResult = ORDER DResult By ReqSum;
       """
       }
+#class Binder:
+#  @staticmethod
+#  def bindParams(script,params)
+#  """
+#  script : pig code string
+#  params : params dictionary
+#  """
+#    for key,value in params.iteritems:
+#        script.replace('$'+key,value)
+#    return script
+
+def bindParams(script,paramsDic):
+  for key,value in paramsDic.iteritems():
+      script = script.replace('$'+key,value)
+       
+  return script
+
+def getModuleFieldsList(moduleName):
+  script = codegenTable[moduleName]
+  #getting the loading statement from whole code
+  script = script.split('\n')[1]
+  n = script.rfind('(')
+  m = script.rfind(')')
+  fieldsString = script[n+1:m].strip()
+  fieldsString = ''.join(fieldsString.split())
+  fieldsList = fieldsString.split(',')
+  for i in range(0,len(fieldsList)):
+    fieldsList[i] = moduleName + "::" + fieldsList[i]
+  return fieldsList
+
+def genSchemaStringByList(schemaList):
+  n = len(schemaList)
+  outString = ""
+  joinKeyFlag = False;
+  for i in range(0,n):
+    appendString = schemaList[i]
+    appendField = appendString.split("::")[1]
+    appendField = appendField.split(":")[0]
+    
+    #TODO: should change join key (UserId here) to variable
+    if (appendField == "UserId") and joinKeyFlag == False:
+      outString = outString + appendField
+      joinKeyFlag = True
+    else:
+      outString = outString + appendString
+
+    if i != n-1:
+      outString += ", "
+  return outString   
+
+if __name__ == "__main__":
+
+
+
+  print "======================start==================="
+  print "======================start==================="
+  print "======================start==================="
+  print "======================start==================="
   
+  print getModuleFieldsList('A1')
+  print getModuleFieldsList('B')
+  print getModuleFieldsList('C')
+  print getModuleFieldsList('D')
+  print "======================debugging==================="
   
   with open('params.json') as data_file:
     jsonArr = json.load(data_file)
@@ -85,14 +125,23 @@ if __name__ == "__main__":
     pigString += script
   
   postString =""
+  curSchemaList = []
   #combine modules
   for i in range(0,len(jsonArr)):
     currentAction = jsonArr[i]['action']
+    curSchemaList += getModuleFieldsList(currentAction)
     if i == 0:
       postString = "Result = " + currentAction + "Result;\n"
+      #postString += "DESCRIBE Result;\n"
+
     else:
+      
       postString += "Result = JOIN Result BY UserId, " +currentAction+"Result BY UserId;\n"
-      postString += "Result = FOREACH Result GENERATE " + currentAction+ "Result::UserId AS UserId, *;\n"
+       
+      print("=======generated SchemaString: "+genSchemaStringByList(curSchemaList)+"\n")
+      postString += "Result =FOREACH Result GENERATE * as ("+ genSchemaStringByList(curSchemaList)+ ");\n"
+      #postString += "Result = FOREACH Result GENERATE " + currentAction+ "Result::UserId AS UserId, *;\n"
+      #postString += "DESCRIBE Result;\n"
 
   #A1BResult = JOIN BResult BY UserId, CResult By UserId;
   pigString += postString
@@ -105,16 +154,16 @@ if __name__ == "__main__":
   
   #with open('cyygeneratedPig.pig','a') as outFile:
   #    outFile.write(pigString)
-  
-  P = Pig.compile(pigString)
-  #P = Pig.compileFromFile('pig_bcd_bc.pig')
-  
-  #run the pig script
-  
-  if True:
-    result = P.bind().runSingle()
-  
-    if result.isSuccessful():
-      print 'run success'
-    else:
-      raise 'run failed'
+  if USE_PIG:
+    P = Pig.compile(pigString)
+    #P = Pig.compileFromFile('pig_bcd_bc.pig')
+    
+    #run the pig script
+    
+    if True:
+      result = P.bind().runSingle()
+    
+      if result.isSuccessful():
+        print 'run success'
+      else:
+        raise 'run failed'
