@@ -1,4 +1,5 @@
 REGISTER /usr/lib/hbase/lib/*.jar;
+/**/
 
 --Load requests
 requests = LOAD 'BarReqLog2013Q4New' USING PigStorage('\u0001') as (Id:chararray,UniqueId:chararray,
