@@ -1,4 +1,8 @@
 [
-{"action":"C","params":{"minReqSum":"15"}},
-{"action":"D","params":{"minReqSum":"15"}}
+"operation":"JOIN", "operationOn":"UserId",
+"modules":
+  [
+    {"module":"C","params":{"minReqSum":"15"}},
+    {"module":"D","params":{"minReqSum":"15"}}
+  ]
 ]

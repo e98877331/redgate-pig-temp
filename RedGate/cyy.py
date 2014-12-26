@@ -102,7 +102,7 @@ if __name__ == "__main__":
     print getModuleFieldsList('D')
     print "======================debugging==================="
 
-    with open('params.json') as data_file:
+    with open('paramsOri.json') as data_file:
         jsonArr = json.load(data_file)
 
     # pprint(params)
