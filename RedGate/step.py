@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-# from codeGenTable import codeGenTable
+from codeGenTable import codeGenTable
 
 
 class Binder:
@@ -34,41 +34,56 @@ $OnField, $Operand2 BY $OnField;\n"
     rhs = None
 
     def __init__(self, operator, operationOn, lhs, rhs):
+        self.mType = BaseStep.TYPE_OPERATOR
+
         self.operator = operator
         self.operationOn = operationOn
         self.lhs = lhs
         self.rhs = rhs
 
     def codeGen(self):
-        # TODO impolemnt
         lhsOut = self.lhs.codeGen()
         rhsOut = self.rhs.codeGen()
-        out = lhsOut + rhsOut + "Result"
+        out = "JoinResult"
         params = {"Operator": self.operator, "OnField": self.operationOn,
                   "Operand1": lhsOut, "Operand2": rhsOut, "ThisOut": out}
         outString = Binder.bindParams(self.templateCodeGenString, params)
         print outString
+        print "\n\n"
         return out
 
 
 class ModuleStep(BaseStep):
+    templateCodeGenString = ""
+    moduleName = None
+    params = None
 
-    def __init__(self, data):
+    def __init__(self, moduleName, params):
         self.mType = BaseStep.TYPE_MODULE
-        self.mData = data
+        self.moduleName = moduleName
+        self.params = params
+        self.templateCodeGenString = codeGenTable[moduleName]
 
     def codeGen(self):
         # TODO implement
-        print self.mData
-        return self.mData
+
+        outString = Binder.bindParams(self.templateCodeGenString, self.params)
+        print outString
+        print "\n\n"
+        return self.moduleName + "Result"
 
 
-lop = ModuleStep("ModuelA")
-rop = ModuleStep("ModuelB")
+A1params = {"startRow": "48_1025339", "endRow": "48_1025340"}
+Bparams = {"minReqSum": "15"}
+lop = ModuleStep("A1", A1params)
+rop = ModuleStep("B", Bparams)
 binOp = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
                            lhs=lop, rhs=rop)
-binOp.codeGen()
 
+
+binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
+                           lhs=lop, rhs=rop)
+binOp.codeGen()
 
 
 
