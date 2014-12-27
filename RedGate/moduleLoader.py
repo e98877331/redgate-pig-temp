@@ -46,3 +46,4 @@ class ModuleLoader:
 
 if __name__ == "__main__":
     print ModuleLoader.loadModule("moduleFile/A1.md")
+    print ModuleLoader.loadModule("moduleFile/B.md")
