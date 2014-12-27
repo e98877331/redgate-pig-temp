@@ -2,27 +2,34 @@ class ModuleLoader:
 
     @classmethod
     def loadModule(cls, fileName):
-        with open(fileName) as data_file:
-            content = data_file.read()
-            moduleName = cls.getStringBetween(content=content,
-                                              sStart="@Module:",
-                                              sEnd="@OutAliase:")
-            outAliase = cls.getStringBetween(content=content,
-                                             sStart="@OutAliase:",
-                                             sEnd="@OutFields:")
-            outFields = cls.getStringBetween(content=content,
-                                             sStart="@OutFields:",
-                                             sEnd="@TemplateCode:")
-            templateCode = cls.getStringToEnd(content=content,
-                                              sStart="@TemplateCode:")
+        try:
+            with open(fileName) as data_file:
+                content = data_file.read()
+                moduleName = cls.getStringBetween(content=content,
+                                                  sStart="@Module:",
+                                                  sEnd="@OutAliase:")
+                outAliase = cls.getStringBetween(content=content,
+                                                 sStart="@OutAliase:",
+                                                 sEnd="@OutFields:")
+                outFields = cls.getStringBetween(content=content,
+                                                 sStart="@OutFields:",
+                                                 sEnd="@TemplateCode:")
+                templateCode = cls.getStringToEnd(content=content,
+                                                  sStart="@TemplateCode:")
 
-            # getting outFields array from string
-            outFields = outFields.replace(",", "")
-            outFields = outFields.split(" ")
-        return {"moduleName": moduleName,
-                "outAliase": outAliase,
-                "outFields": outFields,
-                "templateCode": templateCode}
+                # getting outFields array from string
+                outFields = outFields.replace(",", "")
+                outFields = outFields.split(" ")
+            return {"moduleName": moduleName,
+                    "outAliase": outAliase,
+                    "outFields": outFields,
+                    "templateCode": templateCode}
+        except IOError:
+            print "IOERROR"
+            return None
+        except EnvironmentError:
+            print "loadModule ERROR"
+            return None
 
     @staticmethod
     def getStringToEnd(content, sStart):

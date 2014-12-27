@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
-from codeGenTable import codeGenTable
+# from codeGenTable import codeGenTable
+from moduleLoader import ModuleLoader
+import sys
 
 
 class Binder:
@@ -54,15 +56,26 @@ $OnField, $Operand2 BY $OnField;\n"
 
 
 class ModuleStep(BaseStep):
-    templateCodeGenString = ""
-    moduleName = None
     params = None
+    moduleName = None
+    outAliase = None
+    outFields = None
+    templateCodeGenString = ""
 
     def __init__(self, moduleName, params):
         self.mType = BaseStep.TYPE_MODULE
         self.moduleName = moduleName
         self.params = params
-        self.templateCodeGenString = codeGenTable[moduleName]
+        # self.templateCodeGenString = codeGenTable[moduleName]
+        moduleData = ModuleLoader.loadModule("moduleFile/" +
+                                             moduleName + ".md")
+        if moduleData is None:
+            sys.exit("ERROR: ModuleLoader returns None")
+        if moduleData["moduleName"] != self.moduleName:
+            sys.exit("ERROR: ModuleName ERROR")
+        self.outAliase = moduleData["outAliase"]
+        self.outFields = moduleData["outFields"]
+        self.templateCodeGenString = moduleData["templateCode"]
 
     def codeGen(self):
         # TODO implement
