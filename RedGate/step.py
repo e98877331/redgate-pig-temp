@@ -72,18 +72,14 @@ class ModuleStep(BaseStep):
         print "\n\n"
         return self.moduleName + "Result"
 
+if __name__ == "__main__":
+    A1params = {"startRow": "48_1025339", "endRow": "48_1025340"}
+    Bparams = {"minReqSum": "15"}
+    lop = ModuleStep("A1", A1params)
+    rop = ModuleStep("B", Bparams)
+    binOp = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
+                               lhs=lop, rhs=rop)
 
-A1params = {"startRow": "48_1025339", "endRow": "48_1025340"}
-Bparams = {"minReqSum": "15"}
-lop = ModuleStep("A1", A1params)
-rop = ModuleStep("B", Bparams)
-binOp = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
-                           lhs=lop, rhs=rop)
-
-
-binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
-                           lhs=lop, rhs=rop)
-binOp.codeGen()
-
-
-
+    binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
+                                lhs=lop, rhs=rop)
+    binOp.codeGen()
