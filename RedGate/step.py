@@ -20,10 +20,35 @@ class BaseStep(object):
     TYPE_MODULE = "md"
     mType = None
     mData = None
+    mStepId = -1
+    outFieldsList = None
 
     @abstractmethod
     def codeGen(self):
         pass
+
+    def getOutFieldsList(self):
+        if self.outFieldsList is None:
+            raise Exception("OutFieldsLis is None: " + self.getId)
+        else:
+            return self.outFieldsList
+
+    def getOutFieldsListString(self):
+        out = ""
+        for i in self.outFieldsList:
+            out += i
+            out += ", "
+
+        return out.rstrip(", ")
+#    @abstractmethod
+#    def getOutAliase(self):
+#        pass
+
+    def setId(self, id):
+        self.mStepId = id
+
+    def getId(self):
+        return self.mStepId
 
 
 class BinaryOperatorStep(BaseStep):
@@ -34,6 +59,7 @@ $OnField, $Operand2 BY $OnField;\n"
     # left/rigth hand side step
     lhs = None
     rhs = None
+    # outFieldsList = None   # defined in super class
 
     def __init__(self, operator, operationOn, lhs, rhs):
         self.mType = BaseStep.TYPE_OPERATOR
@@ -75,15 +101,32 @@ class ModuleStep(BaseStep):
             sys.exit("ERROR: ModuleName ERROR")
         self.outAliase = moduleData["outAliase"]
         self.outFields = moduleData["outFields"]
+
+        self.outFieldsList = []
+        for i in self.outFields:
+            self.outFieldsList.append(moduleName + "::" + i)
+
         self.templateCodeGenString = moduleData["templateCode"]
 
     def codeGen(self):
         # TODO implement
 
         outString = Binder.bindParams(self.templateCodeGenString, self.params)
+
+        formatStatement = self.genFormatStatement()
+
         print outString
+
+        print formatStatement
+
         print "\n\n"
         return self.moduleName + "Result"
+
+    def genFormatStatement(self):
+        outString = self.outAliase + " = FOREACH " + self.outAliase + \
+            " GENERATE * AS (" + self.getOutFieldsListString() + ")"
+        return outString
+
 
 if __name__ == "__main__":
     A1params = {"startRow": "48_1025339", "endRow": "48_1025340"}
@@ -94,5 +137,5 @@ if __name__ == "__main__":
                                lhs=lop, rhs=rop)
 
     binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
-                                lhs=lop, rhs=rop)
-    binOp.codeGen()
+                                lhs=binOp, rhs=rop)
+    binOp2.codeGen()
