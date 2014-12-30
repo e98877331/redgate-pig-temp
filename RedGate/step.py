@@ -21,11 +21,18 @@ class BaseStep(object):
     mType = None
     mData = None
     mStepId = -1
+    outAliase = None
     outFieldsList = None
 
     @abstractmethod
     def codeGen(self):
         pass
+
+    def getOutAliase(self):
+        if self.outAliase is None:
+            raise Exception("OutAliase is None: " + self.getId)
+        else:
+            return self.outAliase
 
     def getOutFieldsList(self):
         if self.outFieldsList is None:
@@ -56,6 +63,7 @@ class BinaryOperatorStep(BaseStep):
 $OnField, $Operand2 BY $OnField;\n"
     operator = None
     operationOn = None
+    # outAliase = None # defined in super class
     # left/rigth hand side step
     lhs = None
     rhs = None
@@ -66,25 +74,34 @@ $OnField, $Operand2 BY $OnField;\n"
 
         self.operator = operator
         self.operationOn = operationOn
+
+        # TODO support more binOP
+        self.outAliase = "JoinResult"
+
         self.lhs = lhs
         self.rhs = rhs
 
     def codeGen(self):
         lhsOut = self.lhs.codeGen()
         rhsOut = self.rhs.codeGen()
-        out = "JoinResult"
-        params = {"Operator": self.operator, "OnField": self.operationOn,
-                  "Operand1": lhsOut, "Operand2": rhsOut, "ThisOut": out}
-        outString = Binder.bindParams(self.templateCodeGenString, params)
-        print outString
-        print "\n\n"
-        return out
+        params = {"Operator": self.operator,
+                  "OnField": self.operationOn,
+                  "Operand1": self.lhs.getOutAliase(),
+                  "Operand2": self.rhs.getOutAliase(),
+                  "ThisOut": self.outAliase}
+        genString = lhsOut + rhsOut
+        genString += Binder.bindParams(self.templateCodeGenString, params)
+        genString += "\n\n"
+
+        # print outString
+        # print "\n\n"
+        return genString
 
 
 class ModuleStep(BaseStep):
     params = None
     moduleName = None
-    outAliase = None
+    # outAliase = None # defined in super class
     outFields = None
     templateCodeGenString = ""
 
@@ -109,18 +126,19 @@ class ModuleStep(BaseStep):
         self.templateCodeGenString = moduleData["templateCode"]
 
     def codeGen(self):
-        # TODO implement
 
-        outString = Binder.bindParams(self.templateCodeGenString, self.params)
+        genString = Binder.bindParams(self.templateCodeGenString, self.params)
+        genString += "\n"
+        genString += self.genFormatStatement()
 
-        formatStatement = self.genFormatStatement()
+        # print outString
 
-        print outString
+        # print formatStatement
 
-        print formatStatement
+        genString += "\n\n"
+        # print "\n\n"
 
-        print "\n\n"
-        return self.moduleName + "Result"
+        return genString
 
     def genFormatStatement(self):
         outString = self.outAliase + " = FOREACH " + self.outAliase + \
@@ -138,4 +156,5 @@ if __name__ == "__main__":
 
     binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
                                 lhs=binOp, rhs=rop)
-    binOp2.codeGen()
+
+    print binOp2.codeGen()
