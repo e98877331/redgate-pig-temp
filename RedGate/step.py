@@ -142,7 +142,7 @@ class ModuleStep(BaseStep):
 
     def genFormatStatement(self):
         outString = self.outAliase + " = FOREACH " + self.outAliase + \
-            " GENERATE * AS (" + self.getOutFieldsListString() + ")"
+            " GENERATE * AS (" + self.getOutFieldsListString() + ");"
         return outString
 
 
@@ -157,4 +157,11 @@ if __name__ == "__main__":
     binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
                                 lhs=binOp, rhs=rop)
 
-    print binOp2.codeGen()
+    genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n"
+
+    genString += binOp2.codeGen()
+
+    print genString
+
+    with open("outt.pig", "w") as outFile:
+        outFile.write(genString)
