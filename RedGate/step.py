@@ -1,7 +1,6 @@
 from abc import ABCMeta, abstractmethod
 # from codeGenTable import codeGenTable
 from moduleLoader import ModuleLoader
-import sys
 
 
 class Binder:
@@ -113,9 +112,9 @@ class ModuleStep(BaseStep):
         moduleData = ModuleLoader.loadModule("moduleFile/" +
                                              moduleName + ".md")
         if moduleData is None:
-            sys.exit("ERROR: ModuleLoader returns None")
+            raise Exception("ERROR: ModuleLoader returns None")
         if moduleData["moduleName"] != self.moduleName:
-            sys.exit("ERROR: ModuleName ERROR")
+            raise Exception("ERROR: ModuleName ERROR")
         self.outAliase = moduleData["outAliase"]
         self.outFields = moduleData["outFields"]
 
@@ -161,6 +160,7 @@ if __name__ == "__main__":
 
     genString += binOp2.codeGen()
 
+    genString += "\n\nDUMP JoinResult;"
     print genString
 
     with open("outt.pig", "w") as outFile:
