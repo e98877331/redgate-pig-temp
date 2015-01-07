@@ -29,13 +29,13 @@ class BaseStep(object):
 
     def getOutAliase(self):
         if self.outAliase is None:
-            raise Exception("OutAliase is None: " + self.getId)
+            raise Exception("OutAliase is None: " + str(self.getId))
         else:
             return self.outAliase
 
     def getOutFieldsList(self):
         if self.outFieldsList is None:
-            raise Exception("OutFieldsLis is None: " + self.getId)
+            raise Exception("OutFieldsLis is None: " + str(self.getId))
         else:
             return self.outFieldsList
 
@@ -81,6 +81,7 @@ $OnField, $Operand2 BY $OnField;\n"
         self.rhs = rhs
 
     def codeGen(self):
+        # handling generated code
         lhsOut = self.lhs.codeGen()
         rhsOut = self.rhs.codeGen()
         params = {"Operator": self.operator,
@@ -92,9 +93,21 @@ $OnField, $Operand2 BY $OnField;\n"
         genString += Binder.bindParams(self.templateCodeGenString, params)
         genString += "\n\n"
 
+        # handling fields
+        lhsOutFields = self.lhs.getOutFieldsList()
+        rhsOutFields = self.rhs.getOutFieldsList()
+        self.outFieldsList = lhsOutFields + rhsOutFields
+        # TODO handle with operationON
+        print self.outFieldsList
+
         # print outString
         # print "\n\n"
         return genString
+
+#    def genFormatStatement(self):
+#        outString = self.outAliase + " = FOREACH " + self.outAliase + \
+#            " GENERATE * AS (" + self.getOutFieldsListString() + ");"
+#        return outString
 
 
 class ModuleStep(BaseStep):
@@ -159,9 +172,10 @@ if __name__ == "__main__":
     genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n"
 
     genString += binOp2.codeGen()
+    # genString += binOp.codeGen()
 
     genString += "\n\nDUMP JoinResult;"
-    print genString
+    # print genString
 
     with open("outt.pig", "w") as outFile:
         outFile.write(genString)
