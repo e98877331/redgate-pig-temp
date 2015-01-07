@@ -58,6 +58,7 @@ class BaseStep(object):
 
 
 class BinaryOperatorStep(BaseStep):
+    moduleName = "BinOP"
     templateCodeGenString = "$ThisOut = $Operator $Operand1 BY \
 $OnField, $Operand2 BY $OnField;\n"
     operator = None
@@ -94,20 +95,28 @@ $OnField, $Operand2 BY $OnField;\n"
         genString += "\n\n"
 
         # handling fields
-        lhsOutFields = self.lhs.getOutFieldsList()
-        rhsOutFields = self.rhs.getOutFieldsList()
-        self.outFieldsList = lhsOutFields + rhsOutFields
+        lhsOutFields = self.lhs.getOutFieldsList()[:]
+        rhsOutFields = self.rhs.getOutFieldsList()[:]
         # TODO handle with operationON
-        print self.outFieldsList
+        if self.lhs.moduleName != "BinOP":
+            for i in xrange(len(lhsOutFields)):
+                lhsOutFields[i] = self.lhs.moduleName + "::" + lhsOutFields[i]
+        if self.rhs.moduleName != "BinOP":
+            for i in xrange(len(rhsOutFields)):
+                rhsOutFields[i] = self.rhs.moduleName + "::" + rhsOutFields[i]
+
+        self.outFieldsList = lhsOutFields + rhsOutFields
+
+        genString += self.genFormatStatement()
 
         # print outString
         # print "\n\n"
         return genString
 
-#    def genFormatStatement(self):
-#        outString = self.outAliase + " = FOREACH " + self.outAliase + \
-#            " GENERATE * AS (" + self.getOutFieldsListString() + ");"
-#        return outString
+    def genFormatStatement(self):
+        outString = self.outAliase + " = FOREACH " + self.outAliase + \
+            " GENERATE * AS (" + self.getOutFieldsListString() + ");\n\n"
+        return outString
 
 
 class ModuleStep(BaseStep):
@@ -131,9 +140,9 @@ class ModuleStep(BaseStep):
         self.outAliase = moduleData["outAliase"]
         self.outFields = moduleData["outFields"]
 
-        self.outFieldsList = []
-        for i in self.outFields:
-            self.outFieldsList.append(moduleName + "::" + i)
+        self.outFieldsList = self.outFields
+#        for i in self.outFields:
+#            self.outFieldsList.append(moduleName + "::" + i)
 
         self.templateCodeGenString = moduleData["templateCode"]
 
@@ -166,8 +175,9 @@ if __name__ == "__main__":
     binOp = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
                                lhs=lop, rhs=rop)
 
+    rop2 = ModuleStep("C", Bparams)
     binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
-                                lhs=binOp, rhs=rop)
+                                lhs=binOp, rhs=rop2)
 
     genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n"
 
