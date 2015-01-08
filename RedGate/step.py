@@ -39,9 +39,11 @@ class BaseStep(object):
         else:
             return self.outFieldsList
 
-    def getOutFieldsListString(self):
+    def getOutFieldsListString(self, withType=True):
         out = ""
         for i in self.outFieldsList:
+            if not withType:
+                i = i[:i.rfind(":")]
             out += i
             out += ", "
 
@@ -97,7 +99,7 @@ $OnField, $Operand2 BY $OnField;\n"
         # handling fields
         lhsOutFields = self.lhs.getOutFieldsList()[:]
         rhsOutFields = self.rhs.getOutFieldsList()[:]
-        # TODO handle with operationON
+        # TODO use module type to compare
         if self.lhs.moduleName != "BinOP":
             for i in xrange(len(lhsOutFields)):
                 lhsOutFields[i] = self.lhs.moduleName + "::" + lhsOutFields[i]
@@ -114,8 +116,27 @@ $OnField, $Operand2 BY $OnField;\n"
         return genString
 
     def genFormatStatement(self):
+        opOn = self.lhs.outAliase + "::" + self.operationOn
+        opOnString = opOn + " AS " + self.operationOn
         outString = self.outAliase + " = FOREACH " + self.outAliase + \
-            " GENERATE * AS (" + self.getOutFieldsListString() + ");\n\n"
+            " GENERATE " + opOnString + ", * AS (" + \
+            self.getOutFieldsListString() + ");\n"
+
+        # below handles duplicate operationOn key
+        self.outFieldsList = [self.operationOn + ":chararray"] + self.outFieldsList
+
+        newOutList = self.outFieldsList[:1]
+        for i in self.outFieldsList[1:]:
+            if self.operationOn not in i:
+                newOutList.append(i)
+        self.outFieldsList = newOutList
+
+        outString += self.outAliase + " = FOREACH " + self.outAliase + \
+            " GENERATE " + self.getOutFieldsListString(withType=False) + ";\n\n"
+        print "---------------------------"
+        print self.outFieldsList
+        print newOutList
+        print "---------------------------"
         return outString
 
 
@@ -179,7 +200,7 @@ if __name__ == "__main__":
     binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
                                 lhs=binOp, rhs=rop2)
 
-    genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n"
+    genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
 
     genString += binOp2.codeGen()
     # genString += binOp.codeGen()
