@@ -17,6 +17,7 @@ class BaseStep(object):
 
     TYPE_OPERATOR = "op"
     TYPE_MODULE = "md"
+    moduleName = None
     mType = None
     mData = None
     mStepId = -1
@@ -29,13 +30,27 @@ class BaseStep(object):
 
     def getOutAliase(self):
         if self.outAliase is None:
-            raise Exception("OutAliase is None: " + str(self.getId))
+            raise Exception("OutAliase is None: " + self.getId())
         else:
             return self.outAliase
 
+    # U means unique
+    def getOutAliaseU(self):
+        return self.getOutAliase() + "_" + self.getId()
+
+    def getModuleName(self):
+        if self.moduleName is None:
+            raise Exception("moduleName is None: " + self.getId())
+        else:
+            return self.moduleName
+
+    # U means unique
+    def getModuleNameU(self):
+        return self.getModuleName() + "_" + self.getId()
+
     def getOutFieldsList(self):
         if self.outFieldsList is None:
-            raise Exception("OutFieldsLis is None: " + str(self.getId))
+            raise Exception("OutFieldsLis is None: " + self.getId())
         else:
             return self.outFieldsList
 
@@ -52,15 +67,21 @@ class BaseStep(object):
 #    def getOutAliase(self):
 #        pass
 
-    def setId(self, id):
-        self.mStepId = id
+    def getStepType(self):
+        return self.mType
+
+    def setId(self, stepId):
+        self.mStepId = stepId
 
     def getId(self):
-        return self.mStepId
+        if self.mStepId == -1:
+            return "NotSet"
+        else:
+            return str(self.mStepId)
 
 
 class BinaryOperatorStep(BaseStep):
-    moduleName = "BinOP"
+    # moduleName = "BinOP" #defined in super class
     templateCodeGenString = "$ThisOut = $Operator $Operand1 BY \
 $OnField, $Operand2 BY $OnField;\n"
     operator = None
@@ -71,12 +92,14 @@ $OnField, $Operand2 BY $OnField;\n"
     rhs = None
     # outFieldsList = None   # defined in super class
 
-    def __init__(self, operator, operationOn, lhs, rhs):
+    def __init__(self, stepId, operator, operationOn, lhs, rhs):
         self.mType = BaseStep.TYPE_OPERATOR
+
+        self.setId(stepId=stepId)
 
         self.operator = operator
         self.operationOn = operationOn
-
+        self.moduleName = self.operator
         # TODO support more binOP
         self.outAliase = "JoinResult"
 
@@ -91,7 +114,7 @@ $OnField, $Operand2 BY $OnField;\n"
                   "OnField": self.operationOn,
                   "Operand1": self.lhs.getOutAliase(),
                   "Operand2": self.rhs.getOutAliase(),
-                  "ThisOut": self.outAliase}
+                  "ThisOut": self.getOutAliaseU()}
         genString = lhsOut + rhsOut
         genString += Binder.bindParams(self.templateCodeGenString, params)
         genString += "\n\n"
@@ -100,12 +123,12 @@ $OnField, $Operand2 BY $OnField;\n"
         lhsOutFields = self.lhs.getOutFieldsList()[:]
         rhsOutFields = self.rhs.getOutFieldsList()[:]
         # TODO use module type to compare
-        if self.lhs.moduleName != "BinOP":
+        if self.lhs.getStepType() == BaseStep.TYPE_MODULE:
             for i in xrange(len(lhsOutFields)):
-                lhsOutFields[i] = self.lhs.moduleName + "::" + lhsOutFields[i]
-        if self.rhs.moduleName != "BinOP":
+                lhsOutFields[i] = self.lhs.getModuleNameU() + "::" + lhsOutFields[i]
+        if self.rhs.getStepType() == BaseStep.TYPE_MODULE:
             for i in xrange(len(rhsOutFields)):
-                rhsOutFields[i] = self.rhs.moduleName + "::" + rhsOutFields[i]
+                rhsOutFields[i] = self.rhs.getModuleNameU() + "::" + rhsOutFields[i]
 
         self.outFieldsList = lhsOutFields + rhsOutFields
 
@@ -116,6 +139,7 @@ $OnField, $Operand2 BY $OnField;\n"
         return genString
 
     def genFormatStatement(self):
+
         opOn = self.lhs.outAliase + "::" + self.operationOn
         opOnString = opOn + " AS " + self.operationOn
         outString = self.outAliase + " = FOREACH " + self.outAliase + \
@@ -123,6 +147,7 @@ $OnField, $Operand2 BY $OnField;\n"
             self.getOutFieldsListString() + ");\n"
 
         # below handles duplicate operationOn key
+
         self.outFieldsList = [self.operationOn + ":chararray"] + self.outFieldsList
 
         newOutList = self.outFieldsList[:1]
@@ -142,12 +167,15 @@ $OnField, $Operand2 BY $OnField;\n"
 
 class ModuleStep(BaseStep):
     params = None
-    moduleName = None
+    # moduleName = None #defined in super class
     # outAliase = None # defined in super class
     outFields = None
     templateCodeGenString = ""
 
-    def __init__(self, moduleName, params):
+    def __init__(self, stepId, moduleName, params):
+
+        self.setId(stepId=stepId)
+
         self.mType = BaseStep.TYPE_MODULE
         self.moduleName = moduleName
         self.params = params
@@ -183,21 +211,22 @@ class ModuleStep(BaseStep):
         return genString
 
     def genFormatStatement(self):
-        outString = self.outAliase + " = FOREACH " + self.outAliase + \
-            " GENERATE * AS (" + self.getOutFieldsListString() + ");"
+        outString = self.getOutAliaseU() + " = FOREACH " + \
+            self.getOutAliaseU() + " GENERATE * AS (" + \
+            self.getOutFieldsListString() + ");"
         return outString
 
 
 if __name__ == "__main__":
     A1params = {"startRow": "48_1025339", "endRow": "48_1025340"}
     Bparams = {"minReqSum": "15"}
-    lop = ModuleStep("A1", A1params)
-    rop = ModuleStep("B", Bparams)
-    binOp = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
+    lop = ModuleStep(0, "A1", A1params)
+    rop = ModuleStep(1, "B", Bparams)
+    binOp = BinaryOperatorStep(stepId=2, operator="JOIN", operationOn="UserId",
                                lhs=lop, rhs=rop)
 
-    rop2 = ModuleStep("C", Bparams)
-    binOp2 = BinaryOperatorStep(operator="JOIN", operationOn="UserId",
+    rop2 = ModuleStep(3, "C", Bparams)
+    binOp2 = BinaryOperatorStep(stepId=4, operator="JOIN", operationOn="UserId",
                                 lhs=binOp, rhs=rop2)
 
     genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
