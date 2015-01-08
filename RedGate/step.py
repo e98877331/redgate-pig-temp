@@ -11,6 +11,10 @@ class Binder:
 
         return script
 
+    @staticmethod
+    def bindOutAliaseU(script, step):
+        return script.replace(step.getOutAliase(), step.getOutAliaseU())
+
 
 class BaseStep(object):
     __metaclass__ = ABCMeta
@@ -112,11 +116,14 @@ $OnField, $Operand2 BY $OnField;\n"
         rhsOut = self.rhs.codeGen()
         params = {"Operator": self.operator,
                   "OnField": self.operationOn,
-                  "Operand1": self.lhs.getOutAliase(),
-                  "Operand2": self.rhs.getOutAliase(),
-                  "ThisOut": self.getOutAliaseU()}
+                  "Operand1": self.lhs.getOutAliaseU(),
+                  "Operand2": self.rhs.getOutAliaseU(),
+                  "ThisOut": self.getOutAliase()}
         genString = lhsOut + rhsOut
-        genString += Binder.bindParams(self.templateCodeGenString, params)
+
+        script = Binder.bindParams(self.templateCodeGenString, params)
+        script = Binder.bindOutAliaseU(script, self)
+        genString += script
         genString += "\n\n"
 
         # handling fields
@@ -140,9 +147,10 @@ $OnField, $Operand2 BY $OnField;\n"
 
     def genFormatStatement(self):
 
-        opOn = self.lhs.outAliase + "::" + self.operationOn
+        opOn = self.lhs.getOutAliaseU() + "::" + self.operationOn
         opOnString = opOn + " AS " + self.operationOn
-        outString = self.outAliase + " = FOREACH " + self.outAliase + \
+        outString = self.getOutAliaseU() + " = FOREACH " + \
+            self.getOutAliaseU() + \
             " GENERATE " + opOnString + ", * AS (" + \
             self.getOutFieldsListString() + ");\n"
 
@@ -156,7 +164,7 @@ $OnField, $Operand2 BY $OnField;\n"
                 newOutList.append(i)
         self.outFieldsList = newOutList
 
-        outString += self.outAliase + " = FOREACH " + self.outAliase + \
+        outString += self.getOutAliaseU() + " = FOREACH " + self.getOutAliaseU() + \
             " GENERATE " + self.getOutFieldsListString(withType=False) + ";\n\n"
         print "---------------------------"
         print self.outFieldsList
@@ -197,7 +205,9 @@ class ModuleStep(BaseStep):
 
     def codeGen(self):
 
-        genString = Binder.bindParams(self.templateCodeGenString, self.params)
+        script = Binder.bindParams(self.templateCodeGenString, self.params)
+        script = Binder.bindOutAliaseU(script, self)
+        genString = script
         genString += "\n"
         genString += self.genFormatStatement()
 
