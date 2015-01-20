@@ -118,11 +118,11 @@ $OnField, $Operand2 BY $OnField;\n"
                   "OnField": self.operationOn,
                   "Operand1": self.lhs.getOutAliaseU(),
                   "Operand2": self.rhs.getOutAliaseU(),
-                  "ThisOut": self.getOutAliase()}
+                  "ThisOut": self.getOutAliaseU()}
         genString = lhsOut + rhsOut
 
         script = Binder.bindParams(self.templateCodeGenString, params)
-        script = Binder.bindOutAliaseU(script, self)
+        # script = Binder.bindOutAliaseU(script, self)
         genString += script
         genString += "\n\n"
 
