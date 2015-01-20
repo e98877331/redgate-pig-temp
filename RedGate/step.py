@@ -20,7 +20,7 @@ class Binder:
 class BaseStep(object):
     __metaclass__ = ABCMeta
 
-    TYPE_OPERATOR = "op"
+    TYPE_BINOP = "op"
     TYPE_MODULE = "md"
     moduleName = None
     mType = None
@@ -101,7 +101,7 @@ $OnField1, $Operand2 BY $OnField2;\n"
     # outFieldsList = None   # defined in super class
 
     def __init__(self, stepId, operator, operationOn, lhs, rhs):
-        self.mType = BaseStep.TYPE_OPERATOR
+        self.mType = BaseStep.TYPE_BINOP
 
         self.setId(stepId=stepId)
 
@@ -134,10 +134,10 @@ $OnField1, $Operand2 BY $OnField2;\n"
 
         onField1 = self.operationOn
         onField2 = self.operationOn
-        if (self.lhs.getStepType() == BaseStep.TYPE_OPERATOR):
+        if (self.lhs.getStepType() == BaseStep.TYPE_BINOP):
             onField1 = self.getFullFieldNameOnChildNode(self.lhs, onField1)
 
-        if (self.rhs.getStepType() == BaseStep.TYPE_OPERATOR):
+        if (self.rhs.getStepType() == BaseStep.TYPE_BINOP):
             onField2 = self.getFullFieldNameOnChildNode(self.rhs, onField2)
 
         params = {"Operator": self.operator,
@@ -181,7 +181,6 @@ class ModuleStep(BaseStep):
     # outAliase = None # defined in super class
     outFields = None
     templateCodeGenString = ""
-
     def __init__(self, stepId, moduleName, params):
 
         self.setId(stepId=stepId)
