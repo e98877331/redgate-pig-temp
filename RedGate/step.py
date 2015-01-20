@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 # from codeGenTable import codeGenTable
 from moduleLoader import ModuleLoader
+import pdb
 
 
 class Binder:
@@ -52,11 +53,14 @@ class BaseStep(object):
     def getModuleNameU(self):
         return self.getModuleName() + "_" + self.getId()
 
-    def getOutFieldsList(self):
+    def getOutFieldsList(self, withType=True):
         if self.outFieldsList is None:
             raise Exception("OutFieldsLis is None: " + self.getId())
         else:
-            return self.outFieldsList
+            if withType:
+                return self.outFieldsList
+            else:
+                return [x.rsplit(":",1)[0] for x in self.outFieldsList]
 
     def getOutFieldsListString(self, withType=True):
         out = ""
@@ -87,7 +91,7 @@ class BaseStep(object):
 class BinaryOperatorStep(BaseStep):
     # moduleName = "BinOP" #defined in super class
     templateCodeGenString = "$ThisOut = $Operator $Operand1 BY \
-$OnField, $Operand2 BY $OnField;\n"
+$OnField1, $Operand2 BY $OnField2;\n"
     operator = None
     operationOn = None
     # outAliase = None # defined in super class
@@ -114,22 +118,11 @@ $OnField, $Operand2 BY $OnField;\n"
         # handling generated code
         lhsOut = self.lhs.codeGen()
         rhsOut = self.rhs.codeGen()
-        params = {"Operator": self.operator,
-                  "OnField": self.operationOn,
-                  "Operand1": self.lhs.getOutAliaseU(),
-                  "Operand2": self.rhs.getOutAliaseU(),
-                  "ThisOut": self.getOutAliaseU()}
-        genString = lhsOut + rhsOut
-
-        script = Binder.bindParams(self.templateCodeGenString, params)
-        # script = Binder.bindOutAliaseU(script, self)
-        genString += script
-        genString += "\n\n"
 
         # handling fields
         lhsOutFields = self.lhs.getOutFieldsList()[:]
         rhsOutFields = self.rhs.getOutFieldsList()[:]
-        # TODO use module type to compare
+
         if self.lhs.getStepType() == BaseStep.TYPE_MODULE:
             for i in xrange(len(lhsOutFields)):
                 lhsOutFields[i] = self.lhs.getModuleNameU() + "::" + lhsOutFields[i]
@@ -139,38 +132,47 @@ $OnField, $Operand2 BY $OnField;\n"
 
         self.outFieldsList = lhsOutFields + rhsOutFields
 
+        onField1 = self.operationOn
+        onField2 = self.operationOn
+        if (self.lhs.getStepType() == BaseStep.TYPE_OPERATOR):
+            onField1 = self.getFullFieldNameOnChildNode(self.lhs, onField1)
+
+        if (self.rhs.getStepType() == BaseStep.TYPE_OPERATOR):
+            onField2 = self.getFullFieldNameOnChildNode(self.rhs, onField2)
+
+        params = {"Operator": self.operator,
+                  "OnField1": onField1,
+                  "OnField2": onField2,
+                  "Operand1": self.lhs.getOutAliaseU(),
+                  "Operand2": self.rhs.getOutAliaseU(),
+                  "ThisOut": self.getOutAliaseU()}
+        genString = lhsOut + rhsOut
+        script = Binder.bindParams(self.templateCodeGenString, params)
+        # script = Binder.bindOutAliaseU(script, self)
+        genString += script
+        genString += "\n\n"
         genString += self.genFormatStatement()
 
-        # print outString
-        # print "\n\n"
         return genString
 
     def genFormatStatement(self):
 
-        opOn = self.lhs.getOutAliaseU() + "::" + self.operationOn
-        opOnString = opOn + " AS " + self.operationOn
         outString = self.getOutAliaseU() + " = FOREACH " + \
             self.getOutAliaseU() + \
-            " GENERATE " + opOnString + ", * AS (" + \
+            " GENERATE * AS (" + \
             self.getOutFieldsListString() + ");\n"
 
-        # below handles duplicate operationOn key
-
-        self.outFieldsList = [self.operationOn + ":chararray"] + self.outFieldsList
-
-        newOutList = self.outFieldsList[:1]
-        for i in self.outFieldsList[1:]:
-            if self.operationOn not in i:
-                newOutList.append(i)
-        self.outFieldsList = newOutList
-
-        outString += self.getOutAliaseU() + " = FOREACH " + self.getOutAliaseU() + \
-            " GENERATE " + self.getOutFieldsListString(withType=False) + ";\n\n"
-        print "---------------------------"
-        print self.outFieldsList
-        print newOutList
-        print "---------------------------"
+        # below handles duplicate operationOn kList = [self.operationOn + ":chararray"] + self.outFieldsList
         return outString
+
+    # get bin op field with unambigous prefix
+    def getFullFieldNameOnChildNode(self, childNode, field):
+        for i in childNode.getOutFieldsList(withType=False):
+            l = i.split("::")
+            if len(l) >= 2:
+                if l[1].split(":")[0] == field:
+                    return i
+            # TODO handle field not found
 
 
 class ModuleStep(BaseStep):
