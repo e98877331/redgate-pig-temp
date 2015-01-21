@@ -13,6 +13,10 @@ class Binder:
         return script
 
     @staticmethod
+    def bindChildOutAliase(script, childNode):
+        return script.replace("$input$", childNode.getOutAliaseU())
+
+    @staticmethod
     def bindOutAliaseU(script, step):
         return script.replace(step.getOutAliase(), step.getOutAliaseU())
 
@@ -60,7 +64,7 @@ class BaseStep(object):
             if withType:
                 return self.outFieldsList
             else:
-                return [x.rsplit(":",1)[0] for x in self.outFieldsList]
+                return [x.rsplit(":", 1)[0] for x in self.outFieldsList]
 
     def getOutFieldsListString(self, withType=True):
         out = ""
@@ -181,13 +185,18 @@ class ModuleStep(BaseStep):
     # outAliase = None # defined in super class
     outFields = None
     templateCodeGenString = ""
-    def __init__(self, stepId, moduleName, params):
+    childNode = None
+
+    def __init__(self, stepId, moduleName, params, childNode=None):
 
         self.setId(stepId=stepId)
 
         self.mType = BaseStep.TYPE_MODULE
         self.moduleName = moduleName
         self.params = params
+        if childNode is not None:
+            self.childNode = childNode
+
         # self.templateCodeGenString = codeGenTable[moduleName]
         moduleData = ModuleLoader.loadModule("moduleFile/" +
                                              moduleName + ".md")
@@ -205,10 +214,15 @@ class ModuleStep(BaseStep):
         self.templateCodeGenString = moduleData["templateCode"]
 
     def codeGen(self):
-
+        genString = ""
+        if self.childNode is not None:
+            genString += self.childNode.codeGen()
         script = Binder.bindParams(self.templateCodeGenString, self.params)
         script = Binder.bindOutAliaseU(script, self)
-        genString = script
+        if self.childNode is not None:
+            script = Binder.bindChildOutAliase(script, self.childNode)
+
+        genString += script
         genString += "\n"
         genString += self.genFormatStatement()
 
@@ -222,6 +236,9 @@ class ModuleStep(BaseStep):
         return genString
 
     def genFormatStatement(self):
+        if self.getOutAliase() == "None":
+            return ""
+
         outString = self.getOutAliaseU() + " = FOREACH " + \
             self.getOutAliaseU() + " GENERATE * AS (" + \
             self.getOutFieldsListString() + ");"
@@ -240,12 +257,12 @@ if __name__ == "__main__":
     binOp2 = BinaryOperatorStep(stepId=4, operator="JOIN", operationOn="UserId",
                                 lhs=binOp, rhs=rop2)
 
+    dumpOp = ModuleStep(4, "SimpleDump", {}, childNode=binOp2)
     genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
 
-    genString += binOp2.codeGen()
-    # genString += binOp.codeGen()
-
-    genString += "\n\nDUMP JoinResult;"
+    # genString += binOp2.codeGen()
+    genString += dumpOp.codeGen()
+    # genString += "\n\nDUMP JoinResult;"
     # print genString
 
     with open("outt.pig", "w") as outFile:
