@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 # from codeGenTable import codeGenTable
 from moduleLoader import ModuleLoader
-import pdb
+# import pdb
 
 
 class Binder:
@@ -26,12 +26,14 @@ class BaseStep(object):
 
     TYPE_BINOP = "op"
     TYPE_MODULE = "md"
+    TYPE_INDEPEND = "ind"
     moduleName = None
     mType = None
     mData = None
     mStepId = -1
     outAliase = None
     outFieldsList = None
+    templateCodeGenString = ""
 
     @abstractmethod
     def codeGen(self):
@@ -90,6 +92,17 @@ class BaseStep(object):
             return "NotSet"
         else:
             return str(self.mStepId)
+
+    def loadModule(self, moduleName):
+        moduleData = ModuleLoader.loadModule("moduleFile/" +
+                                             moduleName + ".md")
+        if moduleData is None:
+            raise Exception("ERROR: ModuleLoader returns None")
+        if moduleData["moduleName"] != self.moduleName:
+            raise Exception("ERROR: ModuleName ERROR")
+        self.outAliase = moduleData["outAliase"]
+        self.outFieldsList = moduleData["outFields"]
+        self.templateCodeGenString = moduleData["templateCode"]
 
 
 class BinaryOperatorStep(BaseStep):
@@ -183,8 +196,7 @@ class ModuleStep(BaseStep):
     params = None
     # moduleName = None #defined in super class
     # outAliase = None # defined in super class
-    outFields = None
-    templateCodeGenString = ""
+    # templateCodeGenString = "" #defined in super class
     childNode = None
 
     def __init__(self, stepId, moduleName, params, childNode=None):
@@ -196,22 +208,7 @@ class ModuleStep(BaseStep):
         self.params = params
         if childNode is not None:
             self.childNode = childNode
-
-        # self.templateCodeGenString = codeGenTable[moduleName]
-        moduleData = ModuleLoader.loadModule("moduleFile/" +
-                                             moduleName + ".md")
-        if moduleData is None:
-            raise Exception("ERROR: ModuleLoader returns None")
-        if moduleData["moduleName"] != self.moduleName:
-            raise Exception("ERROR: ModuleName ERROR")
-        self.outAliase = moduleData["outAliase"]
-        self.outFields = moduleData["outFields"]
-
-        self.outFieldsList = self.outFields
-#        for i in self.outFields:
-#            self.outFieldsList.append(moduleName + "::" + i)
-
-        self.templateCodeGenString = moduleData["templateCode"]
+        self.loadModule(moduleName)
 
     def codeGen(self):
         genString = ""
@@ -243,6 +240,22 @@ class ModuleStep(BaseStep):
             self.getOutAliaseU() + " GENERATE * AS (" + \
             self.getOutFieldsListString() + ");"
         return outString
+
+
+class IndependStep(BaseStep):
+    params = None
+
+    def __init__(self, stepId, moduleName, params):
+        self.setId(stepId)
+        self.mType = BaseStep.TYPE_INDEPEND
+        self.moduleName = moduleName
+        self.params = params
+        self.loadModule(moduleName)
+
+    def codeGen(self):
+        genString = Binder.bindParams(self.templateCodeGenString, self.params)
+        genString += "\n\n"
+        return genString
 
 
 if __name__ == "__main__":
