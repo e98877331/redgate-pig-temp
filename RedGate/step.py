@@ -8,7 +8,8 @@ class Binder:
     @staticmethod
     def bindParams(script, paramsDic):
         for key, value in paramsDic.iteritems():
-            script = script.replace('$' + key, value)
+            print "key: " + str(key) + " value: " + str(value)
+            script = script.replace('$' + key, str(value))
 
         return script
 
