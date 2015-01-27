@@ -17,5 +17,6 @@
       {"Module":"DomainFilter","Params":
         {"filterString": "(DomainName matches '.*pingle.*' OR DomainName matches '.*ezprice.*')"}}
     ]
-  ]
+  ],
+ "OutputModule": {"Module":"SimpleDump", "Params":{}} 
 }

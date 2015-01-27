@@ -14,6 +14,7 @@ class MDFParser:
         # pdb.set_trace()
         dataLoaders = jsonArr["DataLoaders"]
         modules = jsonArr["Modules"]
+        outputModule = jsonArr["OutputModule"]
 
         genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
 
@@ -22,7 +23,9 @@ class MDFParser:
             genString += step.codeGen()
 
         ast = self.parseMain(modules, op, opOn)
-        genString += ast.codeGen()
+
+        out = self.parseOutputModule(outputModule, ast)
+        genString += out.codeGen()
 
         with open("compiledResult.pig", "w") as outFile:
             outFile.write(genString)
@@ -52,6 +55,13 @@ class MDFParser:
                 ast = binOp
 
         return ast
+
+    def parseOutputModule(self, module, ast):
+        module = ModuleStep(self.idcount, module["Module"],
+                            module["Params"],
+                            ast)
+        self.idcount += 1
+        return module
 
     def createModuleStep(self, data):
         module = None
