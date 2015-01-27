@@ -3,7 +3,7 @@ from step import ModuleStep, BinaryOperatorStep, IndependStep
 import pdb
 
 
-class MDFParser:
+class MDFCompiler:
 
     idcount = 0
 
@@ -27,8 +27,9 @@ class MDFParser:
         out = self.parseOutputModule(outputModule, ast)
         genString += out.codeGen()
 
-        with open("compiledResult.pig", "w") as outFile:
-            outFile.write(genString)
+        return genString
+        # with open("compiledResult.pig", "w") as outFile:
+        #     outFile.write(genString)
 
     def parseDataLoader(self, dataLoaders):
         stepList = []
@@ -86,6 +87,6 @@ class MDFParser:
 
 
 if __name__ == "__main__":
-    parser = MDFParser()
+    compiler = MDFCompiler()
     # parser.parse("simon.mdf")
-    parser.compile("simon.mdf")
+    compiler.compile("simon.mdf")
