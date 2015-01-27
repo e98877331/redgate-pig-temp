@@ -1,0 +1,21 @@
+{
+ "Operation":"JOIN",
+ "OperationOn":"UniqueId",
+ "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {}}
+  ],
+ "Modules":
+  [
+    [
+      {"Module":"DaysFilter","Params":{"diff": 3, "EndDate": "2013-10-03"}},
+      {"Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*pingle.*' OR DomainName matches '.*ezprice.*')"}}
+    ],
+    [
+      {"Module":"DaysFilter","Params":{"diff": 3, "EndDate": "2013-10-06"}},
+      {"Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*pingle.*' OR DomainName matches '.*ezprice.*')"}}
+    ]
+  ]
+}
