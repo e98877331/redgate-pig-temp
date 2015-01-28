@@ -1,6 +1,15 @@
 @Module:
 DomainFilter
 
+@Parameters:
+filterString
+
+@DataLoader:
+None
+
+@MinInFields:
+UniqueId, DomainName, IPAddress, DumpTime, Referer, ECId, ProductId
+
 @OutAliase:
 specialDomain
 

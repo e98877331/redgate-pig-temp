@@ -1,6 +1,15 @@
 @Module:
 DaysFilter
 
+@Parameters:
+diff, EndDate
+
+@DataLoader:
+DataLoader
+
+@MinInFields:
+None
+
 @OutAliase:
 dateFilterResult
 

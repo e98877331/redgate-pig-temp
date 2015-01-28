@@ -1,6 +1,15 @@
 @Module:
 DataLoader
 
+@Parameters:
+None
+
+@DataLoader:
+None
+
+@MinInFields:
+None
+
 @OutAliase:
 dataLoader
 

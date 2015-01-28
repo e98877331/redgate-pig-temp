@@ -1,3 +1,4 @@
+import pdb
 class ModuleLoader:
 
     @classmethod
@@ -7,7 +8,7 @@ class ModuleLoader:
                 content = data_file.read()
                 moduleName = cls.getStringBetween(content=content,
                                                   sStart="@Module:",
-                                                  sEnd="@OutAliase:")
+                                                  sEnd="@Parameters:")
                 outAliase = cls.getStringBetween(content=content,
                                                  sStart="@OutAliase:",
                                                  sEnd="@OutFields:")

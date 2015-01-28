@@ -1,6 +1,15 @@
 @Module:
 SimpleDump
 
+@Parameters:
+None
+
+@DataLoader:
+None
+
+@MinInFields:
+*
+
 @OutAliase:
 None
 
