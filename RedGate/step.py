@@ -69,9 +69,14 @@ class BaseStep(object):
             else:
                 return [x.rsplit(":", 1)[0] for x in self.outFieldsList]
 
-    def getOutFieldsListString(self, withType=True):
+    def getOutFieldsListString(self, withType=True, useList=None):
+        l = None
+        if useList is None:
+            l = self.outFieldsList
+        else:
+            l = useList
         out = ""
-        for i in self.outFieldsList:
+        for i in l:
             if not withType:
                 i = i[:i.rfind(":")]
             out += i
@@ -153,6 +158,8 @@ $OnField1, $Operand2 BY $OnField2;\n"
         lhsOutFields = self.lhs.getOutFieldsList()[:]
         rhsOutFields = self.rhs.getOutFieldsList()[:]
 
+
+
         if self.lhs.getStepType() == BaseStep.TYPE_MODULE:
             for i in xrange(len(lhsOutFields)):
                 lhsOutFields[i] = self.lhs.getModuleNameU() + "::" + lhsOutFields[i]
@@ -164,14 +171,14 @@ $OnField1, $Operand2 BY $OnField2;\n"
 
         onField1 = self.operationOn
         onField2 = self.operationOn
-        if (self.lhs.getStepType() == BaseStep.TYPE_BINOP):
-            onField1 = self.getFullFieldNameOnChildNode(self.lhs, onField1)
+        # if (self.lhs.getStepType() == BaseStep.TYPE_BINOP):
+        #     onField1 = self.getFullFieldNameOnChildNode(self.lhs, onField1)
 
-        if (self.rhs.getStepType() == BaseStep.TYPE_BINOP):
-            onField2 = self.getFullFieldNameOnChildNode(self.rhs, onField2)
+        # if (self.rhs.getStepType() == BaseStep.TYPE_BINOP):
+        #     onField2 = self.getFullFieldNameOnChildNode(self.rhs, onField2)
 
-        params = {"OnField1": onField1,
-                  "OnField2": onField2,
+        params = {"OnField1": self.operationOn,
+                  "OnField2": self.operationOn,
                   "Operand1": self.lhs.getOutAliaseU(),
                   "Operand2": self.rhs.getOutAliaseU(),
                   "ThisOut": self.getOutAliaseU()}
@@ -190,8 +197,32 @@ $OnField1, $Operand2 BY $OnField2;\n"
             self.getOutAliaseU() + \
             " GENERATE * AS (" + \
             self.getOutFieldsListString() + ");\n"
+        print self.getOutFieldsListString()
+        print self.lhs.getOutFieldsList()[:]
+        # put forward operand
+        # handling fields
+        lhsOutFields = self.lhs.getOutFieldsList()[:]
+        rhsOutFields = self.rhs.getOutFieldsList()[:]
 
-        # below handles duplicate operationOn kList = [self.operationOn + ":chararray"] + self.outFieldsList
+        lhsOutFields.insert(0, lhsOutFields.pop(
+            lhsOutFields.index(self.operationOn + ":chararray")))
+        rhsOutFields.pop(rhsOutFields.index(self.operationOn + ":chararray"))
+        if self.lhs.getStepType() == BaseStep.TYPE_MODULE:
+            for i in xrange(len(lhsOutFields)):
+                lhsOutFields[i] = self.lhs.getModuleNameU() + "::" + lhsOutFields[i]
+        if self.rhs.getStepType() == BaseStep.TYPE_MODULE:
+            for i in xrange(len(rhsOutFields)):
+                rhsOutFields[i] = self.rhs.getModuleNameU() + "::" + rhsOutFields[i]
+
+        self.outFieldsList = lhsOutFields + rhsOutFields
+        ofl = self.getOutFieldsList(withType=False)
+        outString += self.getOutAliaseU() + " = FOREACH " + \
+            self.getOutAliaseU() + \
+            " GENERATE " + ofl[0] + " AS " + self.operationOn + \
+            "," + \
+            self.getOutFieldsListString(useList=ofl[1:]) + \
+            ";\n"
+        self.outFieldsList[0] = self.operationOn + ":chararray"
         return outString
 
     # get bin op field with unambigous prefix
