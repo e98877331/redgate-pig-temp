@@ -108,8 +108,15 @@ class BaseStep(object):
 
 class BinaryOperatorStep(BaseStep):
     # moduleName = "BinOP" #defined in super class
-    templateCodeGenString = "$ThisOut = $Operator $Operand1 BY \
+    andTemplate = "$ThisOut = JOIN $Operand1 BY \
 $OnField1, $Operand2 BY $OnField2;\n"
+    orTemplate = '''
+    $ThisOutTMP = UNION ONSCHEMA $Operand1, $Operand2;\n
+    $ThisOutTMP = GROUP $ThisOutTMP BY $OnField1;
+    $ThisOut = FOREACH $ThisOutTMP GENERATE myfuncs.mergeBag($ThisOutTMP) as gp;
+    $ThisOut = FOREACH $ThisOut GENERATE FLATTEN(gp);
+    '''
+    templateCodeGenString = ""
     operator = None
     operationOn = None
     # outAliase = None # defined in super class
@@ -124,6 +131,11 @@ $OnField1, $Operand2 BY $OnField2;\n"
         self.setId(stepId=stepId)
 
         self.operator = operator
+        if operator == "AND" or operator == "and":
+            self.templateCodeGenString = self.andTemplate
+        elif operator == "OR" or operator == "or":
+            self.templateCodeGenString = self.orTemplate
+
         self.operationOn = operationOn
         self.moduleName = self.operator
         # TODO support more binOP
@@ -158,8 +170,7 @@ $OnField1, $Operand2 BY $OnField2;\n"
         if (self.rhs.getStepType() == BaseStep.TYPE_BINOP):
             onField2 = self.getFullFieldNameOnChildNode(self.rhs, onField2)
 
-        params = {"Operator": self.operator,
-                  "OnField1": onField1,
+        params = {"OnField1": onField1,
                   "OnField2": onField2,
                   "Operand1": self.lhs.getOutAliaseU(),
                   "Operand2": self.rhs.getOutAliaseU(),
@@ -273,7 +284,7 @@ if __name__ == "__main__":
 
     dumpOp = ModuleStep(4, "SimpleDump", {}, childNode=binOp2)
     genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
-
+    genString += "REGISTER 'mySampleLib.py' using jython as myfuncs\n"
     # genString += binOp2.codeGen()
     genString += dumpOp.codeGen()
     # genString += "\n\nDUMP JoinResult;"

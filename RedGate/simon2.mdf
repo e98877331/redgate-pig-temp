@@ -1,5 +1,5 @@
 {
- "Operation":"JOIN",
+ "Operation":"AND",
  "OperationOn":"UniqueId",
  "DataLoaders":
   [
