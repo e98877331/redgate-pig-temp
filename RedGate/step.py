@@ -115,11 +115,14 @@ class BinaryOperatorStep(BaseStep):
     # moduleName = "BinOP" #defined in super class
     andTemplate = "$ThisOut = JOIN $Operand1 BY \
 $OnField1, $Operand2 BY $OnField2;\n"
+
     orTemplate = '''
-    $ThisOutTMP = UNION ONSCHEMA $Operand1, $Operand2;\n
-    $ThisOutTMP = GROUP $ThisOutTMP BY $OnField1;
-    $ThisOut = FOREACH $ThisOutTMP GENERATE myfuncs.mergeBag($ThisOutTMP) as gp;
-    $ThisOut = FOREACH $ThisOut GENERATE FLATTEN(gp);
+    $ThisOut = JOIN $Operand1 BY $OnField1 FULL, $Operand2 BY $OnField2;
+    $ThisOutTMP1 = FILTER $ThisOut BY $Operand1::$OnField1 != '';
+    $ThisOutTMP2 = FILTER $ThisOut BY $Operand2::$OnField2 != '';
+    $ThisOutTMP2 = FOREACH $ThisOutTMP2 GENERATE $Operand2::$OnField2 AS $Operand1::$OnField1, $1 ..;
+    $ThisOut = UNION $ThisOutTMP1, $ThisOutTMP2;
+    $ThisOut = DISTINCT $ThisOut;
     '''
     templateCodeGenString = ""
     operator = None
@@ -226,6 +229,7 @@ $OnField1, $Operand2 BY $OnField2;\n"
         return outString
 
     # get bin op field with unambigous prefix
+    # not used in put forward join operand version
     def getFullFieldNameOnChildNode(self, childNode, field):
         for i in childNode.getOutFieldsList(withType=False):
             l = i.split("::")
