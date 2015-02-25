@@ -9,13 +9,11 @@
 @OutAliase: specialDomain
 @OutFields: UniqueId:chararray, DomainName:chararray, IPAddress:chararray, DumpTime:chararray, Referer:chararray, ECId:chararray, ProductId:chararray
 
-@TemplateCode: 
+@TemplateCode:
 groupCountingData = group $input$ by UniqueId;
 emitData = foreach groupCountingData generate $0, COUNT(uid);
-
 concatLabel = foreach emitData generate $0, 'Y';
 STORE concatLabel INTO 'hbase://r1' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage($relabelTitle);
-
 
 LOGS_GROUP= GROUP emitData ALL;
 LOG_COUNT = FOREACH LOGS_GROUP GENERATE $labelTitle, BagToTuple($1);
