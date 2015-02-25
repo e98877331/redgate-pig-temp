@@ -1,4 +1,3 @@
-
 %default relabelTitle 'cf:比價狂'
 %default labelTitle '比價狂'
 
@@ -10,7 +9,8 @@
 @OutAliase: specialDomain
 @OutFields: UniqueId:chararray, DomainName:chararray, IPAddress:chararray, DumpTime:chararray, Referer:chararray, ECId:chararray, ProductId:chararray
 
-groupCountingData = group filteredData by UniqueId;
+@TemplateCode: 
+groupCountingData = group $input$ by UniqueId;
 emitData = foreach groupCountingData generate $0, COUNT(uid);
 
 concatLabel = foreach emitData generate $0, 'Y';

@@ -6,13 +6,12 @@
 @Module: DaysFilter
 @Parameters: diff, EndDate
 @DataLoader: None
-@InAliase: $dataLoader
 @MinInFields: None
 @OutAliase: dateFilterResult
 @OutFields: UniqueId:chararray, DomainName:chararray, Url:chararray, IPAddress:chararray, DumpTime:chararray, Referer:chararray, SessionId:chararray, ECId:chararray, ProductId:chararray, Date:datetime, DiffDay:chararray
 
 @TemplateCode: 
-calculateDiffDay = FOREACH $dataLoader {
+calculateDiffDay = FOREACH $input$ {
 	splitDumpTime = STRSPLIT(DumpTime, ' ');
 	DumpDateInDateTime = ToDate(splitDumpTime.$0, 'yyyy-MM-dd');
 	EndDateInDateTime = ToDate('$EndDate', 'yyyy-MM-dd');
