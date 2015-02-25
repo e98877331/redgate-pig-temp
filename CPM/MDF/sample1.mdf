@@ -1,0 +1,28 @@
+》愛比價的使用者_UseCase 1
+過去3天內, 符合去過特定網站10次
+
+MDF Structure
+{
+ "Operation":"None",
+ "OperationOn":"None",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {}}
+  ],
+ "Moduels":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "3"}
+      },
+      {
+        "Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*pingle.*' OR DomainName matches '.*ezprice.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "10"}
+      }      
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{}} 
+}
