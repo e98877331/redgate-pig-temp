@@ -39,7 +39,8 @@ countingFilterResult = filter calucateCount by cunt > (long)$count;
 concatLabel = foreach countingFilterResult generate $0, 'Y';
 STORE concatLabel INTO 'hbase://r1' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage($relabelTitle);
 
-LOGS_GROUP= GROUP calucateCount ALL;
+concatLabel = foreach countingFilterResult generate $0;
+LOGS_GROUP= GROUP concatLabel ALL;
 LOG_COUNT = FOREACH LOGS_GROUP GENERATE '$labelTitle', BagToTuple($1);
 STORE LOG_COUNT INTO 'hbase://r1' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage('cf:info1');
 --dump LOG_COUNT;
@@ -48,5 +49,5 @@ STORE LOG_COUNT INTO 'hbase://r1' USING org.apache.pig.backend.hadoop.hbase.HBas
 
 --orderedResult = order countingFilterResult by Diffday;
 
-fs -rm -r test;
-STORE pickupResult INTO 'test' using PigStorage('\u0001');
+--fs -rm -r test;
+--STORE pickupResult INTO 'test' using PigStorage('\u0001');

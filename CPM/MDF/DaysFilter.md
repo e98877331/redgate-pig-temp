@@ -1,8 +1,5 @@
 
-%default diff '3';
-%default EndDate '2014-11-05';
 @ModuleDescription: filter log data by a given days
-
 @Module: DaysFilter
 @Parameters: diff, EndDate
 @DataLoader: None
