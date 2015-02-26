@@ -15,7 +15,7 @@ class ModuleLoader:
             if os.path.isfile(filePath):
                 return ModuleLoader.loadModule(filePath)
 
-        raise Exception("ERROR: Module file not found")
+        raise Exception("ERROR: Module file \'" + moduleName + "\' not found")
         return None
 
     @classmethod

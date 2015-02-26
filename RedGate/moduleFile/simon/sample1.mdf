@@ -1,12 +1,12 @@
 {
- "ModulePaths":["moduleFile/simon/"]
+ "ModulePaths":["moduleFile/simon/"],
  "Operation":"None",
  "OperationOn":"None",
   "DataLoaders":
   [
    {"Module":"DataLoader", "Params": {}}
   ],
- "Moduels":
+ "Modules":
   [
     [
       {
