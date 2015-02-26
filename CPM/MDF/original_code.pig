@@ -25,10 +25,11 @@ specialDomain = FILTER regenData BY (DomainName matches '.*buy.yahoo.*' OR Domai
 
 %default count '2';
 
-groupCountingData = group specialDomain by UniqueId;
+  = group specialDomain by UniqueId;
 calucateCount = foreach groupCountingData generate $0 as UniqueId, COUNT ($1) as cunt;
-countingFilterResult = filter calucateCount by cunt > $count;
+countingFilterResult = filter calucateCount by cunt > (long)$count;
 
+pickupResult = JOIN groupCountingData by $0, countingFilterResult by UniqueId;
 
 orderedResult = order countingFilterResult by Diffday;
 
