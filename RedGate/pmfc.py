@@ -3,7 +3,7 @@
 
 import sys
 from frontend import MDFCompiler
-
+import pdb
 
 argv = sys.argv
 argc = len(sys.argv)
@@ -23,5 +23,7 @@ elif argc == 3:
 compiler = MDFCompiler()
 result = compiler.compile(argv[1])
 
+
 with open(outFileName, "w") as outFile:
-    outFile.write(result)
+    pdb.set_trace()
+    outFile.write(result.encode('utf8'))

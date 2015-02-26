@@ -9,7 +9,6 @@ class ModuleLoader:
     @classmethod
     def loadModuleFromPaths(cls, moduleName):
         print cls.paths
-        pdb.set_trace()
         for path in cls.paths:
             filePath = path + moduleName
             if os.path.isfile(filePath):

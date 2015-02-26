@@ -8,8 +8,13 @@ class Binder:
     @staticmethod
     def bindParams(script, paramsDic):
         for key, value in paramsDic.iteritems():
-            print "key: " + str(key) + " value: " + str(value)
-            script = script.replace('$' + key, str(value))
+            try:
+                print "key: " + unicode(key) + " value: " + unicode(value)
+                # print "key: " + key.encode('utf8') + " value: " \
+                #    + value.encode('utf8')
+            except Exception, e :
+                pdb.set_trace()
+            script = script.replace('$' + key, unicode(value))
 
         return script
 
