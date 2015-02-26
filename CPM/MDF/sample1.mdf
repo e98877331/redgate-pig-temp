@@ -13,16 +13,16 @@ MDF Structure
   [
     [
       {
-        "Module":"DaysFilter","Params":{"diff": "3"}
+        "Module":"DaysFilter","Params":{"diff": "3","EndDate":"2014-11-30"}
       },
       {
         "Module":"DomainFilter","Params":
-        {"filterString": "(DomainName matches '.*pingle.*' OR DomainName matches '.*ezprice.*')"}
+        {"filterString": "(DomainName matches '.*buy.yahoo.*' OR DomainName matches '.*ezprice.*')"}
       },
       {
         "Module":"CountFilter","Params":{"count": "10"}
       }      
     ]
   ],
-  "OutputModule": {"Module":"DataStore", "Params":{}} 
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:比價狂", "labelTitle": "比價狂"}} 
 }
