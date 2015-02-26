@@ -25,13 +25,28 @@ specialDomain = FILTER regenData BY (DomainName matches '.*buy.yahoo.*' OR Domai
 
 %default count '2';
 
-  = group specialDomain by UniqueId;
+groupCountingData = group specialDomain by UniqueId;
 calucateCount = foreach groupCountingData generate $0 as UniqueId, COUNT ($1) as cunt;
 countingFilterResult = filter calucateCount by cunt > (long)$count;
 
-pickupResult = JOIN groupCountingData by $0, countingFilterResult by UniqueId;
+-- keeping user log history
+--pickupResult = JOIN groupCountingData by $0, countingFilterResult by UniqueId;
 
-orderedResult = order countingFilterResult by Diffday;
+%default relabelTitle 'cf:比價狂'
+%default labelTitle '比價狂'
+
+-- attaching user label
+concatLabel = foreach countingFilterResult generate $0, 'Y';
+STORE concatLabel INTO 'hbase://r1' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage($relabelTitle);
+
+LOGS_GROUP= GROUP calucateCount ALL;
+LOG_COUNT = FOREACH LOGS_GROUP GENERATE '$labelTitle', BagToTuple($1);
+STORE LOG_COUNT INTO 'hbase://r1' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage('cf:info1');
+--dump LOG_COUNT;
+
+
+
+--orderedResult = order countingFilterResult by Diffday;
 
 fs -rm -r test;
-STORE orderedResult INTO 'test' using PigStorage('\u0001');
+STORE pickupResult INTO 'test' using PigStorage('\u0001');
