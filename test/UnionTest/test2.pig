@@ -1,4 +1,4 @@
-
+/*UNION udf test*/
 REGISTER /usr/lib/hbase/lib/*.jar;
 
 /**/

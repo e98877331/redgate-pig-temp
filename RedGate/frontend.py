@@ -1,4 +1,4 @@
-from loader import mdfLoader
+from loader import mdfLoader, moduleLoader
 from step import ModuleStep, BinaryOperatorStep, IndependStep
 import pdb
 
@@ -8,13 +8,18 @@ class MDFCompiler:
     idcount = 0
 
     def compile(self, fileName):
-        jsonArr = mdfLoader.loadMDF(fileName)
-        op = jsonArr["Operation"]
-        opOn = jsonArr["OperationOn"]
+        jsonDic = mdfLoader.loadMDF(fileName)
+        if "ModulePaths" in jsonDic:
+            mdPath = jsonDic["ModulePaths"]
+            print mdPath
+            moduleLoader.ModuleLoader.paths = mdPath
+
+        op = jsonDic["Operation"]
+        opOn = jsonDic["OperationOn"]
         # pdb.set_trace()
-        dataLoaders = jsonArr["DataLoaders"]
-        modules = jsonArr["Modules"]
-        outputModule = jsonArr["OutputModule"]
+        dataLoaders = jsonDic["DataLoaders"]
+        modules = jsonDic["Modules"]
+        outputModule = jsonDic["OutputModule"]
 
         genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
         genString += "REGISTER 'mySampleLib.py' using jython as myfuncs\n"

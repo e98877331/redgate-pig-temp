@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Pig Module Framework Compiler Driver
 
 import sys

@@ -1,0 +1,22 @@
+{
+ "ModulePaths":["moduleFile/simon/"]
+ "Operation":"None",
+ "OperationOn":"None",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {}}
+  ],
+ "Moduels":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "3", "EndDate": "2014-11-05"}
+      },
+      {
+        "Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*pingle.*' OR DomainName matches '.*ezprice.*')"}
+      }
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:比價狂","labelTitle": "比價狂"}} 
+}

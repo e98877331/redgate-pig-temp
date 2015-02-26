@@ -100,8 +100,7 @@ class BaseStep(object):
             return str(self.mStepId)
 
     def loadModule(self, moduleName):
-        moduleData = ModuleLoader.loadModule("moduleFile/" +
-                                             moduleName + ".md")
+        moduleData = ModuleLoader.loadModuleFromPaths(moduleName + ".md")
         if moduleData is None:
             raise Exception("ERROR: ModuleLoader returns None")
         if moduleData["moduleName"] != self.moduleName:
@@ -303,6 +302,16 @@ class IndependStep(BaseStep):
         genString = Binder.bindParams(self.templateCodeGenString, self.params)
         genString += "\n\n"
         return genString
+
+
+# class StepFactory():
+#     paths = None
+#     def __init__(self, paths=None):
+#         if paths is not None:
+#             self.paths = path;
+#
+#
+#     def createStep():
 
 
 if __name__ == "__main__":

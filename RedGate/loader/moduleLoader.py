@@ -1,5 +1,22 @@
+import os
 import pdb
+
+
 class ModuleLoader:
+    paths = ["moduleFile/"]
+
+    # paths is array
+    @classmethod
+    def loadModuleFromPaths(cls, moduleName):
+        print cls.paths
+        pdb.set_trace()
+        for path in cls.paths:
+            filePath = path + moduleName
+            if os.path.isfile(filePath):
+                return ModuleLoader.loadModule(filePath)
+
+        raise Exception("ERROR: Module file not found")
+        return None
 
     @classmethod
     def loadModule(cls, fileName):
