@@ -8,7 +8,7 @@
 
 @TemplateCode:
 concatLabel = foreach $input$ generate $0, 'Y';
-STORE concatLabel INTO 'hbase://r1' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage($relabelTitle);
+STORE concatLabel INTO 'hbase://r1' USING org.apache.pig.backend.hadoop.hbase.HBaseStorage('$relabelTitle');
 
 concatLabel = foreach $input$ generate $0;
 LOGS_GROUP= GROUP concatLabel ALL;

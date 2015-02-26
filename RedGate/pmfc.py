@@ -25,5 +25,4 @@ result = compiler.compile(argv[1])
 
 
 with open(outFileName, "w") as outFile:
-    pdb.set_trace()
     outFile.write(result.encode('utf8'))

@@ -1,10 +1,10 @@
 {
- "ModulePaths":["moduleFile/simon2/"],
+ "ModulePaths":["moduleFile/simon/"],
  "Operation":"None",
  "OperationOn":"None",
   "DataLoaders":
   [
-   {"Module":"DataLoader", "Params": {}}
+   {"Module":"DataLoader", "Params": {"dataPath": "/user/hdfs/ReddoorExportDb"}}
   ],
  "Modules":
   [
@@ -21,5 +21,5 @@
       }      
     ]
   ],
-  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "'cf:比價狂'", "labelTitle": "比價狂"}} 
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:比價狂", "labelTitle": "比價狂"}} 
 }
