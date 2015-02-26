@@ -1,6 +1,4 @@
-%default filterString '(DomainName matches '.*pingle.*' OR DomainName matches '.*ezprice.*')'
 @ModuleDescription: filter log data by domain name
-
 @Module: DomainFilter
 @Parameters: filterString
 @DataLoader: None
