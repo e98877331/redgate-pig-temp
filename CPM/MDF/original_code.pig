@@ -32,6 +32,6 @@ countingFilterResult = filter calucateCount by cunt > (long)$count;
 pickupResult = JOIN groupCountingData by $0, countingFilterResult by UniqueId;
 
 orderedResult = order countingFilterResult by Diffday;
-11
+
 fs -rm -r test;
 STORE orderedResult INTO 'test' using PigStorage('\u0001');
