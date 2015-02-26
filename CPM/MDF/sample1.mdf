@@ -13,7 +13,7 @@ MDF Structure
   [
     [
       {
-        "Module":"DaysFilter","Params":{"diff": "3","EndDate":"2014-11-30"}
+        "Module":"DaysFilter","Params":{"diff": "10","EndDate":"2014-11-30"}
       },
       {
         "Module":"DomainFilter","Params":

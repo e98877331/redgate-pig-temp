@@ -1,5 +1,3 @@
-%default count '10';
-
 @Module: CountFilter
 @Parameters: count
 @DataLoader: None
@@ -9,4 +7,4 @@
 @TemplateCode: 
 groupCountingData = group $input$ by UniqueId;
 calucateCount = foreach groupCountingData generate $0 as UniqueId, COUNT ($1) as cunt;
-countingFilterResult = filter calucateCount by cunt > $count;
+countingFilterResult = filter calucateCount by cunt > (long)$count;
