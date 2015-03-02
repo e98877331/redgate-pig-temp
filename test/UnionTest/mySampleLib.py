@@ -30,5 +30,5 @@ def mergeBag(word):
 
 @schemaFunction("mergeBagSchema")
 def mergeBagSchema(input):
-    print "schema: " + str(input)
+    # print "schema: " + str(input)
     return input

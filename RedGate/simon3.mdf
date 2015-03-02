@@ -1,5 +1,5 @@
 {
- "Operation":"AND",
+ "Operation":"OR",
  "OperationOn":"UniqueId",
  "DataLoaders":
   [

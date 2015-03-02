@@ -1,4 +1,4 @@
-
+/*UNION udf test*/
 REGISTER /usr/lib/hbase/lib/*.jar;
 
 /**/
@@ -47,9 +47,13 @@ F =  UNION ONSCHEMA B, C;
 DUMP F;
 DESCRIBE F;
 
-G = GROUP F BY user_id;
+G0 = GROUP F BY user_id;
 
-G = FOREACH G GENERATE group ,myfuncs.mergeBag(F) as F;
+DUMP G0;
+DESCRIBE G0;
+
+
+G = FOREACH G0 GENERATE group ,myfuncs.mergeBag(F) as F;
 
 G = FOREACH G GENERATE FLATTEN(F);
 
