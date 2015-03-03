@@ -1,0 +1,25 @@
+{
+ "ModulePaths":["moduleFile/simon/"],
+ "Operation":"None",
+ "OperationOn":"None",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {"dataPath": "/user/hdfs/ReddoorExportDb"}}
+  ],
+ "Modules":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "10","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*buy.yahoo.*' OR DomainName matches '.*ezprice.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "10"}
+      }      
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:比價狂", "labelTitle": "比價狂"}} 
+}

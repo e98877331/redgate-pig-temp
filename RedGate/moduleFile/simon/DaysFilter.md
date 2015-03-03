@@ -5,7 +5,7 @@
 @DataLoader: DataLoader
 @MinInFields: None
 @OutAliase: dateFilterResult
-@OutFields: UniqueId:chararray, DomainName:chararray, Url:chararray, IPAddress:chararray, DumpTime:chararray, Referer:chararray, SessionId:chararray, ECId:chararray, ProductId:chararray, Date:datetime, DiffDay:chararray
+@OutFields: UniqueId:chararray, DomainName:chararray, Url:chararray, IPAddress:chararray, DumpTime:chararray, Referer:chararray, SessionId:chararray, ECId:chararray, ProductId:chararray, Name:chararray, Date:datetime, DiffDay:chararray
 
 @TemplateCode: 
 calculateDiffDay = FOREACH dataLoader {
@@ -13,7 +13,7 @@ calculateDiffDay = FOREACH dataLoader {
 	DumpDateInDateTime = ToDate(splitDumpTime.$0, 'yyyy-MM-dd');
 	EndDateInDateTime = ToDate('$EndDate', 'yyyy-MM-dd');
 	diffDay = DaysBetween(EndDateInDateTime, DumpDateInDateTime);
-	GENERATE UniqueId, DomainName, Url, IPAddress, DumpTime, Referer, SessionId, ECId, ProductId, DumpDateInDateTime as Date, diffDay as Diffday;
+	GENERATE UniqueId, DomainName, Url, IPAddress, DumpTime, Referer, SessionId, ECId, ProductId, Name, DumpDateInDateTime as Date, diffDay as Diffday;
 }
 
 dateFilterResult = filter calculateDiffDay by Diffday <= (long)$diff and Diffday >=0;

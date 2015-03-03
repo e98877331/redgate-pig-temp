@@ -1,11 +1,11 @@
-@ModuleDescription: filter log data by domain name
-@Module: DomainFilter
+@ModuleDescription: filter log data by a given name
+@Module: NameFilter
 @Parameters: filterString
 @DataLoader: None
-@MinInFields: UniqueId, DomainName, IPAddress, DumpTime, Referer, ECId, ProductId
-@OutAliase: specialDomain
+@MinInFields: UniqueId, DomainName, IPAddress, DumpTime, Referer, ECId, ProductId, Name
+@OutAliase: fittedObjectName
 @OutFields: UniqueId:chararray, DomainName:chararray, IPAddress:chararray, DumpTime:chararray, Referer:chararray, ECId:chararray, ProductId:chararray, Name:chararray
 
 @TemplateCode: 
 regenData = foreach $input$ generate UniqueId, DomainName, IPAddress, DumpTime, Referer, ECId, ProductId, Name;
-specialDomain = FILTER regenData BY $filterString; 
+fittedObjectName = FILTER regenData BY $filterString; 
