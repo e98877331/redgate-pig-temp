@@ -2,7 +2,7 @@
 @Module: DataStore
 @Parameters: relabelTitle,labelTitle
 @DataLoader: None
-@MinInFields: UniqueId, DomainName, IPAddress, DumpTime, Referer, ECId, ProductId
+@MinInFields: None
 @OutAliase: None
 @OutFields: None
 

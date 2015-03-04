@@ -1,0 +1,37 @@
+{
+ "ModulePaths":["moduleFile/simon/"],
+ "Operation":"AND",
+ "OperationOn":"UniqueId",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {"dataPath": "ReddoorExport201411_002"}}
+  ],
+ "Modules":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "30","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*www.fashionguide.com.tw.*' OR DomainName matches '.*www.urcosme.com.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "5"}
+      }      
+    ],
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "7","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"NameFilter","Params":
+        {"filterString": "(ObjectName matches '.*面膜.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "2"}
+      }      
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:看過面膜且去過美妝社群網站", "labelTitle": "看過面膜且去過美妝社群網站"}} 
+}
