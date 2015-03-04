@@ -1,0 +1,25 @@
+{
+ "ModulePaths":["moduleFile/simon/"],
+ "Operation":"None",
+ "OperationOn":"None",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {"dataPath": "ReddoorExport201411_002"}}
+  ],
+ "Modules":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "30","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"ObjectFilter","Params":
+        {"filterString": "(PGCatalogName matches '.*嬰幼兒.*' OR PGCatalogName matches '.*孕婦.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "3"}
+      }      
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:家有小孩", "labelTitle": "家有小孩"}} 
+}

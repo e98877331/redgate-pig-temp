@@ -1,0 +1,25 @@
+{
+ "ModulePaths":["moduleFile/simon/"],
+ "Operation":"None",
+ "OperationOn":"None",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {"dataPath": "ReddoorExport201411_002"}}
+  ],
+ "Modules":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "30","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*www.pingle.com.tw.*' OR DomainName matches '.*www.findprice.com.tw.*' OR DomainName matches '.*www.ezprice.com.tw.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "3"}
+      }      
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:愛比價", "labelTitle": "愛比價"}}
+}

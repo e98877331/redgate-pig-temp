@@ -1,0 +1,37 @@
+{
+ "ModulePaths":["moduleFile/simon/"],
+ "Operation":"AND",
+ "OperationOn":"UniqueId",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {"dataPath": "ReddoorExport201411_002"}}
+  ],
+ "Modules":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "30","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*www.pingle.com.tw.*' OR DomainName matches '.*www.findprice.com.tw.*' OR DomainName matches '.*www.ezprice.com.tw.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "3"}
+      }      
+    ],
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "30","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"NameFilter","Params":
+        {"filterString": "(PGCatalogName matches '.*嬰幼兒.*' OR PGCatalogName matches '.*孕婦.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "3"}
+      }      
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:愛比價且家有小孩", "labelTitle": "愛比價且家有小孩"}} 
+}
