@@ -18,6 +18,10 @@ class ModuleLoader:
         return None
 
     @classmethod
+    def addSearchPath(cls, path):
+        cls.paths = path + cls.paths
+
+    @classmethod
     def loadModule(cls, fileName):
         try:
             with open(fileName) as data_file:

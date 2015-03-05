@@ -12,7 +12,7 @@ class MDFCompiler:
         if "ModulePaths" in jsonDic:
             mdPath = jsonDic["ModulePaths"]
             print mdPath
-            moduleLoader.ModuleLoader.paths = mdPath
+            self.addSearchPath(mdPath)
 
         op = jsonDic["Operation"]
         opOn = jsonDic["OperationOn"]
@@ -36,6 +36,12 @@ class MDFCompiler:
         return genString
         # with open("compiledResult.pig", "w") as outFile:
         #     outFile.write(genString)
+
+    def addSearchPath(self, path):
+        moduleLoader.ModuleLoader.addSearchPath(path)
+
+    def getSearchPath(self):
+        return moduleLoader.ModuleLoader.paths
 
     def parseDataLoader(self, dataLoaders):
         stepList = []
