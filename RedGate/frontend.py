@@ -1,4 +1,5 @@
-from loader import mdfLoader, moduleLoader
+from loader import mdfLoader
+from loader.moduleLoader import ModuleLoader
 from step import ModuleStep, BinaryOperatorStep, IndependStep
 import pdb
 
@@ -6,6 +7,10 @@ import pdb
 class MDFCompiler:
 
     idcount = 0
+    mModuleLoader = None
+
+    def __init__(self):
+        self.mModuleLoader = ModuleLoader()
 
     def compile(self, fileName):
         jsonDic = mdfLoader.loadMDF(fileName)
@@ -21,7 +26,7 @@ class MDFCompiler:
         outputModule = jsonDic["OutputModule"]
 
         genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
-        genString += "REGISTER 'mySampleLib.py' using jython as myfuncs\n"
+        #genString += "REGISTER 'mySampleLib.py' using jython as myfuncs\n"
 
         preStepList = self.parseDataLoader(dataLoaders)
         for step in preStepList:
@@ -37,15 +42,18 @@ class MDFCompiler:
         #     outFile.write(genString)
 
     def addSearchPath(self, path):
-        moduleLoader.ModuleLoader.addSearchPath(path)
+        self.mModuleLoader.addSearchPath(path)
 
     def getSearchPath(self):
-        return moduleLoader.ModuleLoader.paths
+        return self.mModuleLoader.paths
+
+    def getModuleLoader(self):
+        return self.mModuleLoader
 
     def parseDataLoader(self, dataLoaders):
         stepList = []
         for item in dataLoaders:
-            istep = IndependStep(self.idcount, item["Module"], item["Params"])
+            istep = IndependStep(self, self.idcount, item["Module"], item["Params"])
             stepList.append(istep)
             self.idcount += 1
 
@@ -59,7 +67,7 @@ class MDFCompiler:
             if ast is None:
                 ast = joinList[i]
             else:
-                binOp = BinaryOperatorStep(self.idcount, operator=op,
+                binOp = BinaryOperatorStep(self, self.idcount, operator=op,
                                            operationOn=opOn,
                                            lhs=ast,
                                            rhs=joinList[i])
@@ -69,7 +77,7 @@ class MDFCompiler:
         return ast
 
     def parseOutputModule(self, module, ast):
-        module = ModuleStep(self.idcount, module["Module"],
+        module = ModuleStep(self, self.idcount, module["Module"],
                             module["Params"],
                             ast)
         self.idcount += 1
@@ -78,16 +86,16 @@ class MDFCompiler:
     def createModuleStep(self, data):
         module = None
         if isinstance(data, dict):
-            module = ModuleStep(self.idcount, data["Module"], data["Params"])
+            module = ModuleStep(self, self.idcount, data["Module"], data["Params"])
             self.idcount += 1
         elif isinstance(data, list):
             for i in xrange(0, len(data)):
                 d = data[i]
                 if module is None:
-                    module = ModuleStep(self.idcount, d["Module"],
+                    module = ModuleStep(self, self.idcount, d["Module"],
                                         d["Params"])
                 else:
-                    moduleN = ModuleStep(self.idcount, d["Module"],
+                    moduleN = ModuleStep(self, self.idcount, d["Module"],
                                          d["Params"], childNode=module)
                     module = moduleN
                 self.idcount += 1

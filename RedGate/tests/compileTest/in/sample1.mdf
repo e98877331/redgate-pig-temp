@@ -1,5 +1,5 @@
 {
- "ModulePaths":["modules/"],
+ "ModulePaths":["tests/compileTest/modules/","modules/"],
  "Operation":"None",
  "OperationOn":"None",
   "DataLoaders":

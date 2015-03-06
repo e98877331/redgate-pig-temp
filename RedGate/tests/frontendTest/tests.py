@@ -11,9 +11,8 @@ class TestFrontend(unittest.TestCase):
     compiler = None
 
     def setUp(self):
-        compiler = MDFCompiler()
-        compiler.addSearchPath([os.path.join(self.sp,"modules/")])
-
+        self.compiler = MDFCompiler()
+        self.compiler.addSearchPath([os.path.join(self.sp, "modules/")])
 
     def tearDown(self):
         pass
@@ -25,11 +24,19 @@ class TestFrontend(unittest.TestCase):
 
         return jsonArr
 
+    def test_getAndAddSearchPath(self):
+        path = self.compiler.getSearchPath()
+        self.assertEqual(path, ['modules/', 'moduleFile/'])
+        self.compiler.addSearchPath(["test/path1/", "test/path2/"])
+        path2 = self.compiler.getSearchPath()
+        self.assertEqual(path2, ['test/path1/', 'test/path2/',
+                                 'modules/', 'moduleFile/'])
+
     def test_parseDataLoader(self):
         jsonArr = self.loadFile()
         loaders = jsonArr["DataLoaders"]
-        compiler = MDFCompiler()
-        out = compiler.parseDataLoader(loaders)
+        # compiler = MDFCompiler()
+        out = self.compiler.parseDataLoader(loaders)
 
         self.assertEqual(len(out), 4)
         self.assertEqual(out[0].moduleName, u"DataLoader")

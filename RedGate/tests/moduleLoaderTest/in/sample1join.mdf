@@ -1,6 +1,6 @@
 {
- "ModulePaths":["tests/frontendTest/modules/","modules/"],
- "Operation":"OR",
+ "ModulePaths":["moduleFile/simon/"],
+ "Operation":"AND",
  "OperationOn":"UniqueId",
   "DataLoaders":
   [

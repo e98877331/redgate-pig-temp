@@ -1,5 +1,5 @@
 {
- "ModulePaths":["moduleFile/simon/"],
+ "ModulePaths":["tests/frontendTest/modules/","modules/"],
  "Operation":"AND",
  "OperationOn":"UniqueId",
   "DataLoaders":

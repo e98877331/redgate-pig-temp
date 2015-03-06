@@ -35,6 +35,14 @@ class BaseStep(object):
     outFieldsList = None
     templateCodeGenString = ""
 
+    compiler = None
+    moduleLoader = None
+
+
+    def __init__(self, compiler):
+        self.compiler = compiler
+        self.moduleLoader = compiler.getModuleLoader()
+
     @abstractmethod
     def codeGen(self):
         pass
@@ -99,7 +107,7 @@ class BaseStep(object):
             return str(self.mStepId)
 
     def loadModule(self, moduleName):
-        moduleData = ModuleLoader.loadModuleFromPaths(moduleName + ".md")
+        moduleData = self.moduleLoader.loadModuleFromPaths(moduleName + ".md")
         if moduleData is None:
             raise Exception("ERROR: ModuleLoader returns None")
         if moduleData["moduleName"] != self.moduleName:
@@ -131,7 +139,8 @@ $OnField1, $Operand2 BY $OnField2;\n"
     rhs = None
     # outFieldsList = None   # defined in super class
 
-    def __init__(self, stepId, operator, operationOn, lhs, rhs):
+    def __init__(self,compiler, stepId, operator, operationOn, lhs, rhs):
+        super(BinaryOperatorStep, self).__init__(compiler)
         self.mType = BaseStep.TYPE_BINOP
 
         self.setId(stepId=stepId)
@@ -234,6 +243,8 @@ $OnField1, $Operand2 BY $OnField2;\n"
                     return i
             # TODO handle field not found
 
+    def loadModule(self, moduleName):
+        pass
 
 class ModuleStep(BaseStep):
     params = None
@@ -242,7 +253,8 @@ class ModuleStep(BaseStep):
     # templateCodeGenString = "" #defined in super class
     childNode = None
 
-    def __init__(self, stepId, moduleName, params, childNode=None):
+    def __init__(self, compiler, stepId, moduleName, params, childNode=None):
+        super(ModuleStep, self).__init__(compiler)
 
         self.setId(stepId=stepId)
 
@@ -284,7 +296,8 @@ class ModuleStep(BaseStep):
 class IndependStep(BaseStep):
     params = None
 
-    def __init__(self, stepId, moduleName, params):
+    def __init__(self, compiler, stepId, moduleName, params):
+        super(IndependStep, self).__init__(compiler)
         self.setId(stepId)
         self.mType = BaseStep.TYPE_INDEPEND
         self.moduleName = moduleName
@@ -298,13 +311,18 @@ class IndependStep(BaseStep):
 
 
 # class StepFactory():
-#     paths = None
-#     def __init__(self, paths=None):
-#         if paths is not None:
-#             self.paths = path;
 #
 #
-#     def createStep():
+#     moduleLoader = None
+#     def __init__(self, moduleLoader):
+#        self.moduleLoader = moduleLoader
+#
+#     def createStep(self, stepType):
+#         resultStep = None
+#         if stepType == BaseStep.TYPE_BINOP:
+#             resultStep = BinaryOperatorStep
+#         elif stepType == BaseStep.TYPE_MODULE:
+#         elif stepType == BaseStep.TYPE_INDEPEND:
 
 
 if __name__ == "__main__":

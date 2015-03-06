@@ -1,3 +1,5 @@
+from util.dlog import Dlog
+
 import os
 import pdb
 
@@ -5,37 +7,37 @@ import pdb
 class ModuleLoader:
     paths = ["moduleFile/"]
 
-    # paths is array
-    @classmethod
-    def loadModuleFromPaths(cls, moduleName):
-        for path in cls.paths:
-            filePath = path + moduleName
-            if os.path.isfile(filePath):
-                return ModuleLoader.loadModule(filePath)
+    def addSearchPath(self, path):
+        self.paths = path + self.paths
 
-        raise Exception("ERROR: Module file \'" + moduleName + "\' not found")
+    def getSearchPath(self):
+        return self.paths
+
+    # paths is array
+    def loadModuleFromPaths(self, moduleName):
+        for path in self.paths:
+            filePath = os.path.join(path, moduleName)
+            if os.path.isfile(filePath):
+                return self.loadModule(filePath)
+        raise Exception("ERROR: Module file \'" + moduleName + "\' not found.\
+                        SearchPath:" + str(self.paths))
         return None
 
-    @classmethod
-    def addSearchPath(cls, path):
-        cls.paths = path + cls.paths
-
-    @classmethod
-    def loadModule(cls, fileName):
+    def loadModule(self, fileName):
         try:
             with open(fileName) as data_file:
                 content = data_file.read()
-                moduleName = cls.getStringBetween(content=content,
-                                                  sStart="@Module:",
-                                                  sEnd="@Parameters:")
-                outAliase = cls.getStringBetween(content=content,
-                                                 sStart="@OutAliase:",
-                                                 sEnd="@OutFields:")
-                outFields = cls.getStringBetween(content=content,
-                                                 sStart="@OutFields:",
-                                                 sEnd="@TemplateCode:")
-                templateCode = cls.getStringToEnd(content=content,
-                                                  sStart="@TemplateCode:")
+                moduleName = self.getStringBetween(content=content,
+                                                   sStart="@Module:",
+                                                   sEnd="@Parameters:")
+                outAliase = self.getStringBetween(content=content,
+                                                  sStart="@OutAliase:",
+                                                  sEnd="@OutFields:")
+                outFields = self.getStringBetween(content=content,
+                                                  sStart="@OutFields:",
+                                                  sEnd="@TemplateCode:")
+                templateCode = self.getStringToEnd(content=content,
+                                                   sStart="@TemplateCode:")
 
                 # getting outFields array from string
                 outFields = outFields.replace(",", "")
@@ -44,15 +46,14 @@ class ModuleLoader:
                     "outAliase": outAliase,
                     "outFields": outFields,
                     "templateCode": templateCode}
-        except IOError:
-            print "IOERROR"
+        except IOError, e:
+            Dlog("moduleLoader", "IOERROR: " + str(e))
             return None
-        except EnvironmentError:
-            print "loadModule ERROR"
+        except EnvironmentError, e:
+            Dlog("moduleLoader", "loadModule Error")
             return None
 
-    @staticmethod
-    def getStringToEnd(content, sStart):
+    def getStringToEnd(self, content, sStart):
         startP = content.find(sStart)
         if (startP == -1):
             print "error moduel format"
@@ -60,8 +61,7 @@ class ModuleLoader:
         result = content[startP + len(sStart):]
         return result.strip()
 
-    @staticmethod
-    def getStringBetween(content, sStart, sEnd):
+    def getStringBetween(self, content, sStart, sEnd):
         startP = content.find(sStart)
         endP = content.find(sEnd)
         if (startP == -1 or endP == -1):
@@ -71,6 +71,3 @@ class ModuleLoader:
         result = content[startP + len(sStart):endP]
         return result.strip()
 
-if __name__ == "__main__":
-    print ModuleLoader.loadModule("moduleFile/A1.md")
-    print ModuleLoader.loadModule("moduleFile/B.md")
