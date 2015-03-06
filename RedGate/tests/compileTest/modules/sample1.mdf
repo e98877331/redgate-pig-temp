@@ -1,5 +1,5 @@
 {
- "ModulePaths":["modules/"],
+ "ModulePaths":["moduleFile/simon/"],
  "Operation":"None",
  "OperationOn":"None",
   "DataLoaders":

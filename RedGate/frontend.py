@@ -11,7 +11,6 @@ class MDFCompiler:
         jsonDic = mdfLoader.loadMDF(fileName)
         if "ModulePaths" in jsonDic:
             mdPath = jsonDic["ModulePaths"]
-            print mdPath
             self.addSearchPath(mdPath)
 
         op = jsonDic["Operation"]

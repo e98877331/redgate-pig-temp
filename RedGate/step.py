@@ -8,12 +8,6 @@ class Binder:
     @staticmethod
     def bindParams(script, paramsDic):
         for key, value in paramsDic.iteritems():
-            try:
-                print "key: " + unicode(key) + " value: " + unicode(value)
-                # print "key: " + key.encode('utf8') + " value: " \
-                #    + value.encode('utf8')
-            except Exception, e :
-                pdb.set_trace()
             script = script.replace('$' + key, unicode(value))
 
         return script
@@ -204,8 +198,6 @@ $OnField1, $Operand2 BY $OnField2;\n"
             self.getOutAliaseU() + \
             " GENERATE * AS (" + \
             self.getOutFieldsListString() + ");\n"
-        print self.getOutFieldsListString()
-        print self.lhs.getOutFieldsList()[:]
         # put forward operand
         # handling fields
         lhsOutFields = self.lhs.getOutFieldsList()[:]
@@ -274,12 +266,8 @@ class ModuleStep(BaseStep):
         genString += "\n"
         genString += self.genFormatStatement()
 
-        # print outString
-
-        # print formatStatement
 
         genString += "\n\n"
-        # print "\n\n"
 
         return genString
 
@@ -337,7 +325,6 @@ if __name__ == "__main__":
     # genString += binOp2.codeGen()
     genString += dumpOp.codeGen()
     # genString += "\n\nDUMP JoinResult;"
-    # print genString
 
     with open("outt.pig", "w") as outFile:
         outFile.write(genString)

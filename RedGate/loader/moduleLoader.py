@@ -8,7 +8,6 @@ class ModuleLoader:
     # paths is array
     @classmethod
     def loadModuleFromPaths(cls, moduleName):
-        print cls.paths
         for path in cls.paths:
             filePath = path + moduleName
             if os.path.isfile(filePath):

@@ -16,7 +16,7 @@ class TestCompileProcess(unittest.TestCase):
 
     def test_compile(self):
 
-        inDirPath = self.sp + "/in"
+        inDirPath = os.path.join(self.sp, "in")
         answerDirPath = os.path.join(self.sp, "answer")
         outDirPath = os.path.join(self.sp, "out")
         files = listdir(inDirPath)
@@ -34,7 +34,7 @@ class TestCompileProcess(unittest.TestCase):
                 answer = answerFile.read()
 
             # self.assertEqual(result.encode('utf8'), answer)
-            self.assertEqual(result, answer)
+            self.assertEqual(result, answer.decode('utf8'))
 
 if __name__ == '__main__':
     # print os.path.dirname(os.path.abspath(__file__))
