@@ -1,0 +1,37 @@
+{
+ "ModulePaths":["moduleFile/simon/"],
+ "Operation":"AND",
+ "OperationOn":"UniqueId",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {"dataPath": "ReddoorExport201411"}}
+  ],
+ "Modules":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "30","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*www.bnext.com.tw.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "2"}
+      }      
+    ],
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "7","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"NameFilter","Params":
+        {"filterString": "(Name matches '.*iPhone 6.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "2"}
+      }      
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:看過iPhone且去過數位時代網站", "labelTitle": "看過iPhone且去過數位時代網站"}} 
+}

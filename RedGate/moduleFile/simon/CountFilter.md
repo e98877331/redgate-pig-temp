@@ -1,7 +1,7 @@
 @Module: CountFilter
 @Parameters: count
 @DataLoader: None
-@MinInFields: None
+@MinInFields: UniqueId:chararray
 @OutAliase: countingFilterResult
 @OutFields: UniqueId:chararray, Visited:long
 @TemplateCode: 
