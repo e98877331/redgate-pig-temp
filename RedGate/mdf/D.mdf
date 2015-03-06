@@ -1,0 +1,25 @@
+{
+ "ModulePaths":["moduleFile/simon/"],
+ "Operation":"None",
+ "OperationOn":"None",
+  "DataLoaders":
+  [
+   {"Module":"DataLoader", "Params": {"dataPath": "ReddoorExport201411_002"}}
+  ],
+ "Modules":
+  [
+    [
+      {
+        "Module":"DaysFilter","Params":{"diff": "30","EndDate":"2014-11-30"}
+      },
+      {
+        "Module":"DomainFilter","Params":
+        {"filterString": "(DomainName matches '.*www.fashionguide.com.tw.*' OR DomainName matches '.*www.urcosme.com.*')"}
+      },
+      {
+        "Module":"CountFilter","Params":{"count": "5"}
+      }      
+    ]
+  ],
+  "OutputModule": {"Module":"DataStore", "Params":{"relabelTitle": "cf:去過美妝社群", "labelTitle": "去過美妝社群"}}
+}
