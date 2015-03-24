@@ -1,0 +1,23 @@
+{
+  "ModulePaths":["moduleFile/weichi/"],
+  "Operation":"None",
+  "OperationOn":"None",
+  "DataLoaders":
+  [
+    {"Module":"DataLoader", "Params":{"dataPath": "/user/hdfs/ReddoorExportDb002"}}
+  ],
+  "Modules":
+  [
+    [
+      {
+        "Module":"DatesFilter", "Params":{"StartDate": "2014-11-17", "EndDate":"2014-11-18"}
+      },
+      {
+        "Module":"TimesFilter", "Params":{"StartTime": "23", "EndTime":"1"}
+      }
+    ]
+  ],
+  "OutputModule":
+  {"Module":"DataDump", "Params":{"p1":"123"}
+  }
+}
