@@ -25,8 +25,9 @@ class MDFCompiler:
         modules = jsonDic["Modules"]
         outputModule = jsonDic["OutputModule"]
 
-        genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
-        #genString += "REGISTER 'mySampleLib.py' using jython as myfuncs\n"
+        genString = ""
+        # genString = "REGISTER /usr/lib/hbase/lib/*.jar;\n/**/\n"
+        # genString += "REGISTER 'mySampleLib.py' using jython as myfuncs\n"
 
         preStepList = self.parseDataLoader(dataLoaders)
         for step in preStepList:
