@@ -1,5 +1,3 @@
-REGISTER /usr/lib/hbase/lib/*.jar;
-/**/
 dataLoader = LOAD 'ReddoorExport201411' USING PigStorage('\u0001') AS (LogId:chararray, UniqueId:chararray, DomainName:chararray, Url:chararray, IPAddress:chararray, DumpTime:chararray, Referer:chararray, SessionId:chararray, ECId:chararray, ProductId:chararray);
 
 calculateDiffDay = FOREACH dataLoader {
