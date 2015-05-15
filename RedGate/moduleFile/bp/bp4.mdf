@@ -1,0 +1,23 @@
+{
+  "ModulePaths":["moduleFile/bp/"],
+  "Operation":"None",
+  "OperationOn":"None",
+  "DataLoaders":
+  [
+    {
+      "Module":"DataLoader", "Params":{"dataPath":"/user/hdfs/ReddoorExportDb002"}
+    }
+  ],
+  "Modules":
+  [
+    [
+      {
+        "Module":"Bp4", "Params":{"m":"10000000", "n":"20"}
+      }
+    ]
+  ],
+  "OutputModule":
+  {
+    "Module":"DataStore", "Params":{"columnFamily":"BatchProcessResult:BP4"}
+  }
+}
